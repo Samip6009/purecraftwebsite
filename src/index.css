@@ -135,6 +135,7 @@
     font-size: 16px;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
   }
 
   body {
@@ -148,19 +149,19 @@
   }
 
   h1 {
-    @apply text-5xl md:text-6xl lg:text-7xl leading-[1.1];
+    @apply text-5xl md:text-6xl lg:text-7xl leading-[1.05];
   }
 
   h2 {
-    @apply text-3xl md:text-4xl lg:text-5xl leading-[1.15];
+    @apply text-3xl md:text-4xl lg:text-5xl leading-[1.1];
   }
 
   h3 {
-    @apply text-2xl md:text-3xl leading-[1.2];
+    @apply text-2xl md:text-3xl leading-[1.15];
   }
 
   p {
-    @apply text-base md:text-lg leading-relaxed text-text-secondary;
+    @apply text-base md:text-lg leading-relaxed text-text-secondary max-w-prose;
   }
 
   /* Focus States - Accessibility */
@@ -174,6 +175,10 @@
       animation-duration: 0.01ms !important;
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
+    }
+
+    html {
+      scroll-behavior: auto;
     }
   }
 }

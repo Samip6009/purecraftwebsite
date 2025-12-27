@@ -417,6 +417,7 @@ export function AnimatedRoiCalculator() {
     }
     emitAnalytics();
     trackCTAClick('Book Demo with Projection', 'roi_calculator', '#contact');
+    trackEvent('book_demo_click', { source: 'primary_cta' });
     
     sessionStorage.setItem('roiPrefill', JSON.stringify({
       source: 'roi_calculator',

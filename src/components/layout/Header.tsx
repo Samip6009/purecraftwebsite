@@ -2,7 +2,7 @@
  * Header.tsx - Main site header with logo, navigation, and socials
  * Features: Glass effect, mobile menu, Instagram/Facebook links
  */
-import { useState } from 'react';
+import { useState, type MouseEvent } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X, ArrowUpRight, Instagram } from 'lucide-react';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
@@ -19,16 +19,14 @@ const FacebookIcon = ({ className }: { className?: string }) => (
 
 const navLinks = [
   { name: 'Services', href: '#services' },
-  { name: 'Portfolio', href: '#portfolio' },
-  { name: 'ROI Calculator', href: '#roi' },
-  { name: 'About', href: '#about' },
+  { name: 'Results', href: '#results' },
   { name: 'Contact', href: '#contact' },
 ];
 
 const socialLinks = [
   { 
     name: 'Instagram', 
-    href: 'https://www.instagram.com/purecraft.media?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==', 
+    href: 'https://www.instagram.com/purecraft.media', 
     icon: Instagram,
   },
   { 
@@ -44,8 +42,16 @@ export function Header() {
 
   const toggleMenu = () => setIsOpen(!isOpen);
 
-  const handleCTAClick = () => {
+  const handleCTAClick = (event?: MouseEvent<HTMLElement>) => {
+    event?.preventDefault();
     trackCTAClick('Get Started', 'header', '#contact');
+
+    const contactSection = document.getElementById('contact');
+    if (contactSection) {
+      contactSection.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth', block: 'start' });
+    } else {
+      window.location.href = '#contact';
+    }
   };
 
   const handleSocialClick = (platform: string) => {
@@ -74,9 +80,10 @@ export function Header() {
               width={48}
               height={48}
               loading="eager"
+              decoding="async"
               fetchPriority="high"
             />
-            <span className="hidden sm:block font-serif text-lg md:text-xl font-medium text-text-primary">
+            <span className="inline-block font-serif text-lg md:text-xl font-medium text-text-primary">
               Pure Craft
             </span>
           </motion.a>
@@ -87,6 +94,7 @@ export function Header() {
               <a
                 key={link.name}
                 href={link.href}
+                onClick={link.href === '#contact' ? handleCTAClick : undefined}
                 className="link-editorial text-small font-medium text-text-secondary hover:text-text-primary transition-colors duration-medium"
               >
                 {link.name}
@@ -105,7 +113,7 @@ export function Header() {
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => handleSocialClick(social.name)}
-                  className="w-9 h-9 flex items-center justify-center rounded-full border border-border hover:border-charcoal-muted hover:bg-surface-2 transition-all duration-medium"
+                  className="relative z-50 pointer-events-auto w-9 h-9 flex items-center justify-center rounded-full border border-border hover:border-charcoal-muted hover:bg-surface-2 transition-all duration-medium"
                   aria-label={`Follow us on ${social.name}`}
                 >
                   <social.icon className="w-4 h-4 text-text-secondary" />
@@ -113,17 +121,6 @@ export function Header() {
               ))}
             </div>
 
-            {/* CTA Button */}
-            <motion.a
-              href="#contact"
-              onClick={handleCTAClick}
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground text-small font-medium rounded-full transition-all duration-medium hover:shadow-depth-3"
-              whileHover={prefersReducedMotion ? {} : { scale: 1.02 }}
-              whileTap={prefersReducedMotion ? {} : { scale: 0.98 }}
-            >
-              Get Started
-              <ArrowUpRight className="w-4 h-4" />
-            </motion.a>
           </div>
 
           {/* Mobile Menu Button */}
@@ -154,7 +151,12 @@ export function Header() {
                   <motion.a
                     key={link.name}
                     href={link.href}
-                    onClick={() => setIsOpen(false)}
+                    onClick={(e) => {
+                      setIsOpen(false);
+                      if (link.href === '#contact') {
+                        handleCTAClick(e);
+                      }
+                    }}
                     className="text-lg font-medium text-text-secondary hover:text-text-primary transition-colors py-2"
                     initial={prefersReducedMotion ? {} : { opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
@@ -173,7 +175,7 @@ export function Header() {
                       target="_blank"
                       rel="noopener noreferrer"
                       onClick={() => handleSocialClick(social.name)}
-                      className="w-10 h-10 flex items-center justify-center rounded-full border border-border"
+                      className="relative z-50 pointer-events-auto w-10 h-10 flex items-center justify-center rounded-full border border-border"
                       aria-label={`Follow us on ${social.name}`}
                     >
                       <social.icon className="w-5 h-5 text-text-secondary" />
@@ -181,21 +183,6 @@ export function Header() {
                   ))}
                 </div>
 
-                {/* Mobile CTA */}
-                <motion.a
-                  href="#contact"
-                  onClick={() => {
-                    setIsOpen(false);
-                    handleCTAClick();
-                  }}
-                  className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-primary text-primary-foreground font-medium rounded-full mt-2"
-                  initial={prefersReducedMotion ? {} : { opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: prefersReducedMotion ? 0 : 0.4 }}
-                >
-                  Get Started
-                  <ArrowUpRight className="w-4 h-4" />
-                </motion.a>
               </nav>
             </Container>
           </motion.div>

@@ -1,0 +1,3 @@
+<!-- This file should be replaced with actual favicon.ico binary, but we're creating an SVG version -->
+<!-- The favicon.ico in /public will serve as the tab icon -->
+<!-- Pure Craft minimalist branding -->

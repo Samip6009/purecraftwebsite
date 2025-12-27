@@ -40,6 +40,8 @@ export const SAMPLE_MEDIA: MediaAsset[] = [
     type: 'image',
     src: '/assets/photos/team-meeting.jpg',
     alt: 'Marketing team collaborating on campaign strategy',
+    width: 1600,
+    height: 1067,
     caption: 'Our team in action',
     seo: {
       name: 'Pure Craft Marketing Team',
@@ -52,6 +54,8 @@ export const SAMPLE_MEDIA: MediaAsset[] = [
     type: 'image',
     src: '/assets/photos/dashboard-analytics.jpg',
     alt: 'Real-time analytics dashboard showing campaign performance',
+    width: 1600,
+    height: 1067,
     caption: 'Live campaign metrics',
     seo: {
       name: 'Campaign Analytics Dashboard',
@@ -65,6 +69,8 @@ export const SAMPLE_MEDIA: MediaAsset[] = [
     src: '/assets/videos/client-success.mp4',
     poster: '/assets/photos/client-success-poster.jpg',
     alt: 'Client success story video showing business growth results',
+    width: 1920,
+    height: 1080,
     videoSrc: {
       mp4: '/assets/videos/client-success.mp4',
       webm: '/assets/videos/client-success.webm',
@@ -201,6 +207,10 @@ export function MediaBlock({
             src={asset.poster}
             alt={asset.alt}
             className="absolute inset-0 w-full h-full object-cover"
+            loading="lazy"
+            decoding="async"
+            width={asset.width}
+            height={asset.height}
           />
         )}
         
@@ -287,6 +297,9 @@ export function MediaBlock({
           alt={asset.alt}
           loading={priority ? 'eager' : 'lazy'}
           onLoad={handleLoad}
+          decoding="async"
+          width={asset.width}
+          height={asset.height}
           className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${
             isLoaded ? 'opacity-100' : 'opacity-0'
           }`}
@@ -342,6 +355,10 @@ export function MediaThumbnail({
             className={`w-full h-full object-cover transition-transform duration-500 ${
               hoverEffect && isHovered ? 'scale-105' : 'scale-100'
             }`}
+            loading="lazy"
+            decoding="async"
+            width={asset.width}
+            height={asset.height}
           />
           <video
             ref={videoRef}
@@ -363,6 +380,9 @@ export function MediaThumbnail({
           src={asset.src}
           alt={asset.alt}
           loading="lazy"
+          decoding="async"
+          width={asset.width}
+          height={asset.height}
           className={`w-full h-full object-cover transition-transform duration-500 ${
             hoverEffect && isHovered ? 'scale-105' : 'scale-100'
           }`}

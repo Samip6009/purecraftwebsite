@@ -83,6 +83,7 @@ export function FooterPremium() {
                 width={40}
                 height={40}
                 loading="lazy"
+                decoding="async"
               />
               <span className="font-serif text-lg font-medium text-text-primary">
                 Pure Craft
@@ -103,7 +104,7 @@ export function FooterPremium() {
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => handleSocialClick(social.name)}
-                  className="w-10 h-10 flex items-center justify-center rounded-full border border-border hover:border-charcoal-muted hover:bg-surface-3 transition-all duration-medium"
+                  className="relative z-50 pointer-events-auto w-10 h-10 flex items-center justify-center rounded-full border border-border hover:border-charcoal-muted hover:bg-surface-3 transition-all duration-medium"
                   whileHover={prefersReducedMotion ? {} : { scale: 1.05 }}
                   whileTap={prefersReducedMotion ? {} : { scale: 0.95 }}
                   aria-label={`Follow us on ${social.name}`}

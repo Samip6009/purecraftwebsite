@@ -1,6 +1,7 @@
 import { ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
+import { FloatingWhatsApp } from '@/components/ui/FloatingWhatsApp';
 
 interface SiteShellProps {
   children: ReactNode;
@@ -32,6 +33,9 @@ export function SiteShell({ children, className = '' }: SiteShellProps) {
       >
         {children}
       </motion.div>
+
+      {/* Global floating WhatsApp action */}
+      <FloatingWhatsApp />
     </div>
   );
 }

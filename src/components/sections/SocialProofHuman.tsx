@@ -68,6 +68,9 @@ const ProofCard = ({
           alt={item.alt}
           className="w-full h-full object-cover"
           loading="lazy"
+          decoding="async"
+          width={800}
+          height={800}
         />
       </div>
 
@@ -98,6 +101,9 @@ export function SocialProofHuman() {
           className="absolute inset-0 w-full h-full object-cover blur-sm"
           style={{ opacity: 0.04 }}
           loading="lazy"
+          decoding="async"
+          width={1600}
+          height={900}
         />
         <div className="absolute inset-0 bg-surface-2/95" />
         {/* Dot pattern */}

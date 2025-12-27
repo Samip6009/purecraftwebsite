@@ -2,27 +2,37 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     
     <!-- SEO Meta Tags -->
-    <title>Pure Craft — Digital Marketing Agency in Nepal</title>
-    <meta name="description" content="Pure Craft is Nepal's leading digital marketing agency. AI-powered marketing, appointment setting, and lead generation for growing businesses." />
-    <meta name="keywords" content="Pure Craft, Marketing Agency Nepal, Digital Marketing Nepal, SMMA Nepal, AI Appointment Setting" />
+    <title>Pure Craft | Performance-Driven Digital Marketing Agency in Nepal</title>
+    <meta name="description" content="Pure Craft is a performance-focused digital marketing agency in Nepal helping businesses grow through paid ads, AI appointment setting, and lead generation." />
+    <meta name="keywords" content="digital marketing agency Nepal, lead generation Nepal, AI appointment setting, performance marketing Nepal" />
     <meta name="author" content="Pure Craft" />
+    <meta name="robots" content="index,follow" />
     
-    <!-- Open Graph -->
-    <meta property="og:title" content="Pure Craft — Digital Marketing Agency in Nepal" />
-    <meta property="og:description" content="AI-powered marketing and lead generation for growing businesses in Nepal." />
+    <!-- Open Graph (Social Sharing) -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://samipkc.com.np" />
+    <meta property="og:title" content="Pure Craft | Performance-Driven Digital Marketing Agency in Nepal" />
+    <meta property="og:description" content="Pure Craft is a performance-focused digital marketing agency in Nepal helping businesses grow through paid ads, AI appointment setting, and lead generation." />
+    <meta property="og:site_name" content="Pure Craft" />
+    <!-- Replace with live domain when deploying -->
+    <meta property="og:url" content="https://www.purecraft.media/" />
+    <!-- Ensure this image exists in public/assets; replace if needed -->
+    <meta property="og:image" content="/assets/og-cover.jpg" />
     
-    <!-- Twitter Card -->
+    <!-- Twitter / X Card -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Pure Craft — Digital Marketing Agency in Nepal" />
-    <meta name="twitter:description" content="AI-powered marketing and lead generation for growing businesses in Nepal." />
+    <meta name="twitter:title" content="Pure Craft | Performance-Driven Digital Marketing Agency in Nepal" />
+    <meta name="twitter:description" content="Pure Craft is a performance-focused digital marketing agency in Nepal helping businesses grow through paid ads, AI appointment setting, and lead generation." />
+    <meta name="twitter:image" content="/assets/og-cover.jpg" />
     
-    <!-- Canonical URL -->
-    <link rel="canonical" href="https://samipkc.com.np" />
+    <!-- Canonical URL (replace if domain changes) -->
+    <link rel="canonical" href="https://www.purecraft.media/" />
+    
+    <!-- Favicon - Pure Craft branding -->
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/favicon.ico" />
     
     <!-- Preconnect to Google Fonts for performance -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -51,6 +61,60 @@
       @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
       .skeleton-pulse{animation:pulse 2s cubic-bezier(0.4,0,0.6,1) infinite}
     </style>
+
+    <!-- Google Analytics 4 (GA4) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7BE4MM5M03"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);} 
+      gtag('js', new Date());
+      gtag('config', 'G-7BE4MM5M03', { anonymize_ip: true });
+    </script>
+
+    
+    
+    <!-- Schema Markup: Organization -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        "name": "Pure Craft",
+        "url": "https://www.purecraft.media/",
+        "logo": "/favicon.svg",
+        "sameAs": [
+          "https://www.instagram.com/purecraft.media",
+          "https://www.facebook.com/profile.php?id=61576632570565"
+        ],
+        "contactPoint": [{
+          "@type": "ContactPoint",
+          "contactType": "customer service",
+          "telephone": "+9779810071283",
+          "email": "hello@samipkc.com.np",
+          "availableLanguage": ["en", "ne"]
+        }]
+      }
+    </script>
+
+    <!-- Schema Markup: LocalBusiness -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "LocalBusiness",
+        "name": "Pure Craft",
+        "address": {
+          "@type": "PostalAddress",
+          "addressCountry": "NP",
+          "addressRegion": "Bagmati",
+          "addressLocality": "Kathmandu"
+        },
+        "image": "/assets/og-cover.jpg",
+        "sameAs": [
+          "https://www.instagram.com/purecraft.media",
+          "https://www.facebook.com/profile.php?id=61576632570565"
+        ],
+        "telephone": "+9779810071283"
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>

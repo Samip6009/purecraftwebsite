@@ -10,37 +10,42 @@ const services = [
   {
     id: 'paid-ads',
     title: 'Paid Ads',
-    benefit: 'Meta & Google that convert',
+    benefit: 'Predictable Meta & Google acquisition',
     icon: Megaphone,
     gradient: 'from-blue-600 to-purple-700',
+    image: '/assets/photos/service-ads.jpg',
   },
   {
     id: 'funnels',
     title: 'Funnels',
-    benefit: 'Landing pages that capture',
+    benefit: 'Conversion-optimized funnels for call flow',
     icon: Layers,
     gradient: 'from-purple-600 to-pink-700',
+    image: '/assets/photos/service-funnels.jpg',
   },
   {
     id: 'lead-management',
     title: 'Lead CRM',
-    benefit: 'Automated follow-up',
+    benefit: 'Automated follow-up and pipeline control',
     icon: Database,
     gradient: 'from-pink-600 to-red-700',
+    image: '/assets/photos/service-crm.jpg',
   },
   {
     id: 'appointment-booking',
     title: 'AI Booking',
-    benefit: 'Calendar fills itself',
+    benefit: 'Autonomous scheduling that fills calendars',
     icon: Bot,
     gradient: 'from-orange-600 to-yellow-700',
+    image: '/assets/photos/service-calendar.jpg',
   },
   {
     id: 'reporting',
     title: 'Reporting',
-    benefit: 'Know what works',
+    benefit: 'Decision-grade reporting and tracking',
     icon: LineChart,
     gradient: 'from-green-600 to-teal-700',
+    image: '/assets/photos/service-reports.jpg',
   },
 ];
 
@@ -56,16 +61,31 @@ const ServiceTile = ({
   const Icon = service.icon;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 30 }}
+    <motion.article
+      initial={{ opacity: 0, y: 10 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: '-30px' }}
       transition={{ duration: reduced ? 0 : 0.5, delay: index * 0.1 }}
       whileHover={reduced ? {} : { y: -8, scale: 1.02 }}
-      className="group relative aspect-square rounded-2xl overflow-hidden cursor-pointer"
+      className="group relative aspect-square rounded-2xl overflow-hidden cursor-pointer shadow-lg hover:shadow-2xl transition-shadow duration-300"
+      aria-label={`${service.title} — ${service.benefit}`}
     >
+      {/* Background image */}
+      <img
+        src={service.image}
+        alt={`${service.title} – ${service.benefit} visual`}
+        loading="lazy"
+        decoding="async"
+        width={1200}
+        height={1200}
+        className="absolute inset-0 w-full h-full object-cover"
+      />
+      
+      {/* Dark overlay for text readability */}
+      <div className="absolute inset-0 bg-black/15 group-hover:bg-black/5 transition-colors duration-300" />
+      
       {/* Gradient background */}
-      <div className={`absolute inset-0 bg-gradient-to-br ${service.gradient}`} />
+      <div className={`absolute inset-0 bg-gradient-to-br ${service.gradient} opacity-30`} />
       
       {/* Animated shimmer */}
       {!reduced && (
@@ -90,18 +110,18 @@ const ServiceTile = ({
 
         {/* Text */}
         <div>
-          <h3 className="font-serif text-xl md:text-2xl text-primary-foreground mb-1">
+          <h2 className="font-serif text-xl md:text-2xl text-primary-foreground mb-1">
             {service.title}
-          </h3>
-          <p className="text-small text-primary-foreground/80">
+          </h2>
+          <p className="text-small text-primary-foreground/80 group-hover:text-primary-foreground transition-colors duration-300">
             {service.benefit}
           </p>
         </div>
       </div>
 
       {/* Hover overlay */}
-      <div className="absolute inset-0 bg-charcoal/0 group-hover:bg-charcoal/10 transition-colors duration-300" />
-    </motion.div>
+      <div className="absolute inset-0 bg-charcoal/0 transition-colors duration-300 pointer-events-none" />
+    </motion.article>
   );
 };
 
@@ -131,9 +151,9 @@ export function ServicesVisual() {
           className="text-center mb-12"
         >
           <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl text-text-primary mb-3">
-            Full-Stack Growth
+            Full-Stack Acquisition
           </h2>
-          <p className="text-lg text-text-secondary">Everything you need. No gaps.</p>
+          <p className="text-lg text-text-secondary">Integrated systems. No gaps.</p>
         </motion.div>
 
         {/* Services grid */}

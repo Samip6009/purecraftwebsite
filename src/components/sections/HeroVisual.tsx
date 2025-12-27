@@ -173,8 +173,9 @@ export function HeroVisual({ variant = 0 }: HeroVisualProps) {
     return () => clearInterval(interval);
   }, []);
 
-  const handlePrimaryCTA = () => {
+    const handlePrimaryCTA = () => {
     trackCTAClick('Book Demo', 'hero_visual', '#contact');
+      trackEvent('book_demo_click', { source: 'primary_cta' });
   };
 
   const handleSecondaryCTA = () => {

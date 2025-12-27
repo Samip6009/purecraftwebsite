@@ -1,0 +1,16 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Pure Craft minimalist logo for favicon -->
+  <!-- Neutral dark background -->
+  <rect width="64" height="64" fill="#0A0A0A"/>
+  
+  <!-- Geometric P shape - minimal, modern -->
+  <g fill="#FFFFFF">
+    <!-- Vertical stem -->
+    <rect x="18" y="12" width="6" height="40" rx="2"/>
+    
+    <!-- Horizontal top bar (P bowl) -->
+    <rect x="24" y="12" width="14" height="6" rx="2"/>
+    <rect x="38" y="18" width="6" height="8" rx="2"/>
+    <rect x="24" y="20" width="14" height="6" rx="2"/>
+  </g>
+</svg>

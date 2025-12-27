@@ -2,7 +2,7 @@
  * ContactFormPremium.tsx - Visual contact section
  * Pure Craft — Card-based, gradient background, mobile-first
  */
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowUpRight, ArrowLeft, Mail, MapPin, CheckCircle2, Phone, Calendar, User, Building, MessageCircle } from 'lucide-react';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
@@ -36,6 +36,8 @@ const formatPhoneDisplay = (phone: string): string => {
   return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6, 10)}`;
 };
 
+const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
 interface FormData {
   name: string;
   email: string;
@@ -64,7 +66,7 @@ function PhoneInput({
 
   return (
     <div className="relative">
-      <label className="flex items-center gap-2 text-small font-medium text-text-primary mb-2">
+      <label htmlFor="phone" className="flex items-center gap-2 text-small font-medium text-text-primary mb-2">
         <Phone className="w-4 h-4" />
         Phone Number *
       </label>
@@ -80,10 +82,15 @@ function PhoneInput({
         
         <input
           type="tel"
+          id="phone"
           value={value}
           onChange={(e) => onChange(formatPhoneDisplay(e.target.value))}
           placeholder="XXX-XXX-XXXX"
           required
+          autoComplete="tel"
+          inputMode="tel"
+          aria-invalid={Boolean(error)}
+          aria-describedby={error ? 'phone-error' : undefined}
           className={`flex-1 px-4 py-3 bg-surface-2 border border-border rounded-r-xl text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-charcoal/20 ${
             error ? 'border-red-400' : ''
           }`}
@@ -117,7 +124,7 @@ function PhoneInput({
         )}
       </AnimatePresence>
 
-      {error && <p className="mt-1 text-caption text-red-500">{error}</p>}
+      {error && <p id="phone-error" className="mt-1 text-caption text-red-500" aria-live="polite">{error}</p>}
     </div>
   );
 }
@@ -127,6 +134,9 @@ export function ContactFormPremium() {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
+  const sectionRef = useRef<HTMLDivElement | null>(null);
+  const nameInputRef = useRef<HTMLInputElement | null>(null);
+  const hasFocusedRef = useRef(false);
   
   const [formData, setFormData] = useState<FormData>({
     name: '',
@@ -137,6 +147,13 @@ export function ContactFormPremium() {
     businessType: '',
     message: '',
   });
+
+  const isFormValid = useMemo(() => {
+    const nameValid = Boolean(formData.name.trim());
+    const emailValid = emailPattern.test(formData.email.trim());
+    const phoneValid = validatePhone(formData.phone);
+    return nameValid && emailValid && phoneValid;
+  }, [formData]);
 
   // Check for prefill
   useEffect(() => {
@@ -156,6 +173,32 @@ export function ContactFormPremium() {
     } catch { /* ignore */ }
   }, []);
 
+  useEffect(() => {
+    if (!sectionRef.current || !nameInputRef.current) return;
+    if (typeof window === 'undefined') return;
+
+    const isDesktopPointer = window.matchMedia('(pointer: fine)').matches;
+    if (!isDesktopPointer) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !hasFocusedRef.current) {
+            hasFocusedRef.current = true;
+            nameInputRef.current?.focus({ preventScroll: true });
+          }
+        });
+      },
+      { rootMargin: '0px 0px -30% 0px', threshold: 0.3 },
+    );
+
+    observer.observe(sectionRef.current);
+
+    return () => {
+      observer.disconnect();
+    };
+  }, []);
+
   const updateField = useCallback((field: keyof FormData, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     setErrors(prev => ({ ...prev, [field]: undefined }));
@@ -166,7 +209,7 @@ export function ContactFormPremium() {
     
     if (!formData.name.trim()) newErrors.name = 'Required';
     if (!formData.email.trim()) newErrors.email = 'Required';
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+    else if (!emailPattern.test(formData.email.trim())) {
       newErrors.email = 'Invalid email';
     }
     if (!formData.phone.trim()) newErrors.phone = 'Required';
@@ -246,10 +289,10 @@ export function ContactFormPremium() {
       </div>
 
       <Container size="wide" className="relative z-10">
-        <div className="grid lg:grid-cols-2 gap-12 lg:gap-16">
+        <div ref={sectionRef} className="grid lg:grid-cols-2 gap-12 lg:gap-16">
           {/* Left: Info */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: prefersReducedMotion ? 0 : 0.6 }}
@@ -267,9 +310,9 @@ export function ContactFormPremium() {
                 <Mail className="w-5 h-5" />
                 hello@samipkc.com.np
               </a>
-              <a href="tel:+9779800000000" className="flex items-center gap-3 text-primary-foreground/80 hover:text-primary-foreground transition-colors">
+              <a href="tel:+9779810071283" className="flex items-center gap-3 text-primary-foreground/80 hover:text-primary-foreground transition-colors" onClick={() => trackEvent('call_click', { source: 'cta' })}>
                 <Phone className="w-5 h-5" />
-                +977 980-000-0000
+                +977 9810071283
               </a>
               <div className="flex items-center gap-3 text-primary-foreground/60">
                 <MapPin className="w-5 h-5" />
@@ -280,17 +323,19 @@ export function ContactFormPremium() {
             {/* Quick action buttons */}
             <div className="flex flex-wrap gap-3">
               <a
-                href="tel:+9779800000000"
+                href="tel:+9779810071283"
                 className="inline-flex items-center gap-2 px-5 py-3 bg-primary-foreground/10 border border-primary-foreground/20 rounded-full text-primary-foreground hover:bg-primary-foreground/20 transition-colors"
+                onClick={() => trackEvent('call_click', { source: 'cta' })}
               >
                 <Phone className="w-4 h-4" />
                 Call Now
               </a>
               <a
-                href="https://wa.me/9779800000000"
+                href="https://wa.me/9779810071283"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-5 py-3 bg-green-600 rounded-full text-primary-foreground hover:bg-green-700 transition-colors"
+                onClick={() => trackEvent('whatsapp_click', { source: 'cta' })}
               >
                 <MessageCircle className="w-4 h-4" />
                 WhatsApp
@@ -300,7 +345,7 @@ export function ContactFormPremium() {
 
           {/* Right: Form Card */}
           <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 10 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: prefersReducedMotion ? 0 : 0.6, delay: 0.2 }}
@@ -318,8 +363,9 @@ export function ContactFormPremium() {
                   
                   <div className="flex flex-col sm:flex-row gap-3 justify-center">
                     <a
-                      href="tel:+9779800000000"
+                      href="tel:+9779810071283"
                       className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-charcoal text-primary-foreground rounded-full"
+                      onClick={() => trackEvent('call_click', { source: 'cta' })}
                     >
                       <Phone className="w-4 h-4" />
                       Call Now
@@ -333,43 +379,52 @@ export function ContactFormPremium() {
                   </div>
                 </motion.div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-5">
+                <form onSubmit={handleSubmit} className="space-y-5" autoComplete="on" noValidate>
                   {/* Name */}
                   <div>
-                    <label className="flex items-center gap-2 text-small font-medium text-text-primary mb-2">
+                    <label htmlFor="full-name" className="flex items-center gap-2 text-small font-medium text-text-primary mb-2">
                       <User className="w-4 h-4" />
                       Full Name *
                     </label>
                     <input
                       type="text"
+                      id="full-name"
+                      ref={nameInputRef}
                       value={formData.name}
                       onChange={(e) => updateField('name', e.target.value)}
-                      placeholder="John Doe"
+                      placeholder="Your name"
                       required
+                      autoComplete="name"
+                      aria-invalid={Boolean(errors.name)}
+                      aria-describedby={errors.name ? 'name-error' : undefined}
                       className={`w-full px-4 py-3 bg-surface-2 border border-border rounded-xl text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-charcoal/20 ${
                         errors.name ? 'border-red-400' : ''
                       }`}
                     />
-                    {errors.name && <p className="mt-1 text-caption text-red-500">{errors.name}</p>}
+                    {errors.name && <p id="name-error" className="mt-1 text-caption text-red-500" aria-live="polite">{errors.name}</p>}
                   </div>
 
                   {/* Email */}
                   <div>
-                    <label className="flex items-center gap-2 text-small font-medium text-text-primary mb-2">
+                    <label htmlFor="email" className="flex items-center gap-2 text-small font-medium text-text-primary mb-2">
                       <Mail className="w-4 h-4" />
                       Email Address *
                     </label>
                     <input
                       type="email"
+                      id="email"
                       value={formData.email}
                       onChange={(e) => updateField('email', e.target.value)}
-                      placeholder="john@company.com"
+                      placeholder="you@company.com"
                       required
+                      autoComplete="email"
+                      aria-invalid={Boolean(errors.email)}
+                      aria-describedby={errors.email ? 'email-error' : undefined}
                       className={`w-full px-4 py-3 bg-surface-2 border border-border rounded-xl text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-charcoal/20 ${
                         errors.email ? 'border-red-400' : ''
                       }`}
                     />
-                    {errors.email && <p className="mt-1 text-caption text-red-500">{errors.email}</p>}
+                    {errors.email && <p id="email-error" className="mt-1 text-caption text-red-500" aria-live="polite">{errors.email}</p>}
                   </div>
 
                   {/* Phone */}
@@ -383,13 +438,15 @@ export function ContactFormPremium() {
 
                   {/* Business Type */}
                   <div>
-                    <label className="flex items-center gap-2 text-small font-medium text-text-primary mb-2">
+                    <label htmlFor="business-type" className="flex items-center gap-2 text-small font-medium text-text-primary mb-2">
                       <Building className="w-4 h-4" />
                       Business Type
                     </label>
                     <select
+                      id="business-type"
                       value={formData.businessType}
                       onChange={(e) => updateField('businessType', e.target.value)}
+                      autoComplete="organization"
                       className="w-full px-4 py-3 bg-surface-2 border border-border rounded-xl text-text-primary focus:outline-none focus:ring-2 focus:ring-charcoal/20"
                     >
                       <option value="">Select type</option>
@@ -404,12 +461,15 @@ export function ContactFormPremium() {
                   {/* Submit */}
                   <motion.button
                     type="submit"
-                    disabled={isLoading}
+                    disabled={isLoading || !isFormValid}
+                    aria-busy={isLoading}
+                    aria-live="polite"
                     className="w-full inline-flex items-center justify-center gap-2 px-6 py-4 bg-charcoal text-primary-foreground font-semibold rounded-xl disabled:opacity-50"
-                    whileHover={prefersReducedMotion ? {} : { scale: 1.02 }}
+                    style={{ willChange: 'transform' }}
+                    whileHover={prefersReducedMotion ? {} : { scale: 1.02, transition: { duration: 0.12, ease: 'easeOut', delay: 0.04 } }}
                     whileTap={prefersReducedMotion ? {} : { scale: 0.98 }}
                   >
-                    {isLoading ? 'Sending...' : 'Get Started'}
+                    {isLoading ? 'Sending...' : 'Book Demo'}
                     <ArrowUpRight className="w-5 h-5" />
                   </motion.button>
                 </form>

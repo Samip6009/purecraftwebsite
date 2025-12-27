@@ -138,6 +138,9 @@ export function BackgroundVisual({
           className={`absolute inset-0 w-full h-full object-cover ${blur ? 'blur-sm' : ''}`}
           style={{ opacity }}
           loading="lazy"
+          decoding="async"
+          width={1600}
+          height={900}
         />
       ) : (
         <video

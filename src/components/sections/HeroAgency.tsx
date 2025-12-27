@@ -6,7 +6,7 @@
 import { useState, useEffect } from 'react';
 import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
 import { ArrowUpRight, Calendar, TrendingUp, Users, Zap } from 'lucide-react';
-import { trackCTAClick } from '@/lib/analytics';
+import { trackCTAClick, trackEvent } from '@/lib/analytics';
 
 // Animated KPI card
 const FloatingKPI = ({ 
@@ -15,25 +15,26 @@ const FloatingKPI = ({
   icon: Icon, 
   delay, 
   position,
-  reduced 
+  reduced,
+  disableMotion,
 }: { 
   value: string; 
   label: string; 
   icon: React.ElementType;
   delay: number;
-  position: string;
   reduced: boolean;
+  disableMotion: boolean;
 }) => (
   <motion.div
-    initial={{ opacity: 0, scale: 0.8, y: 20 }}
-    animate={{ opacity: 1, scale: 1, y: 0 }}
-    transition={{ delay, duration: reduced ? 0 : 0.6, ease: [0.16, 1, 0.3, 1] }}
+    initial={disableMotion ? { opacity: 1, scale: 1, y: 0 } : { opacity: 0, scale: 0.8, y: 20 }}
+    animate={disableMotion ? { opacity: 1, scale: 1, y: 0 } : { opacity: 1, scale: 1, y: 0 }}
+    transition={{ delay: disableMotion ? 0 : delay, duration: reduced || disableMotion ? 0 : 0.6, ease: [0.16, 1, 0.3, 1] }}
     className={`absolute ${position} z-20`}
   >
     <motion.div 
       className="bg-background/95 backdrop-blur-xl rounded-2xl border border-border/50 shadow-depth-4 p-4 md:p-5"
-      animate={reduced ? {} : { y: [0, -8, 0] }}
-      transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: delay * 2 }}
+      animate={disableMotion ? { y: 0 } : { y: [0, -8, 0] }}
+      transition={{ duration: disableMotion ? 0 : 4, repeat: disableMotion ? 0 : Infinity, ease: 'easeInOut', delay: disableMotion ? 0 : delay * 2 }}
     >
       <div className="flex items-center gap-3">
         <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-surface-2 flex items-center justify-center">
@@ -49,7 +50,7 @@ const FloatingKPI = ({
 );
 
 // Animated lead notification
-const LeadNotification = ({ reduced }: { reduced: boolean }) => {
+const LeadNotification = ({ reduced, disableMotion }: { reduced: boolean; disableMotion: boolean }) => {
   const [currentLead, setCurrentLead] = useState(0);
   const leads = [
     { name: 'Sarah M.', action: 'booked a demo', time: 'Just now' },
@@ -58,21 +59,21 @@ const LeadNotification = ({ reduced }: { reduced: boolean }) => {
   ];
 
   useEffect(() => {
-    if (reduced) return;
+    if (reduced || disableMotion) return;
     const interval = setInterval(() => {
       setCurrentLead((prev) => (prev + 1) % leads.length);
     }, 3000);
     return () => clearInterval(interval);
-  }, [reduced]);
+  }, [reduced, disableMotion, leads.length]);
 
   const lead = leads[currentLead];
 
   return (
     <motion.div
       key={currentLead}
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      exit={{ opacity: 0, x: 20 }}
+      initial={disableMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: -20 }}
+      animate={disableMotion ? { opacity: 1, x: 0 } : { opacity: 1, x: 0 }}
+      exit={disableMotion ? { opacity: 1, x: 0 } : { opacity: 0, x: 20 }}
       className="bg-background/95 backdrop-blur-xl rounded-2xl border border-border/50 shadow-depth-3 p-4"
     >
       <div className="flex items-center gap-3">
@@ -93,29 +94,52 @@ export function HeroAgency() {
   const { scrollY } = useScroll();
   const backgroundY = useTransform(scrollY, [0, 500], [0, 150]);
   const opacity = useTransform(scrollY, [0, 400], [1, 0]);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setMounted(true));
+    return () => cancelAnimationFrame(id);
+  }, []);
+
+  const disableHeavyMotion = prefersReducedMotion;
+  const enableMotion = mounted && !disableHeavyMotion;
 
   const handlePrimaryCTA = () => {
     trackCTAClick('Book Demo', 'hero_agency', '#contact');
-    document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
+    // GA4 event for primary CTA
+    try { 
+      const { trackEvent } = require('@/lib/analytics');
+      trackEvent('book_demo_click', { source: 'primary_cta' });
+    } catch {}
+
+    const contactSection = document.getElementById('contact');
+    if (contactSection) {
+      contactSection.scrollIntoView({ behavior: prefersReducedMotion ? 'auto' : 'smooth', block: 'start' });
+    } else {
+      window.location.href = '#contact';
+    }
   };
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section
+      className="relative min-h-screen flex items-center justify-center overflow-hidden"
+      style={{ contain: 'layout paint style', isolation: 'isolate' }}
+    >
       {/* Full-screen animated background */}
       <div className="absolute inset-0">
         {/* Base gradient mesh */}
         <motion.div 
-          className="absolute inset-0"
-          style={{ y: prefersReducedMotion ? 0 : backgroundY }}
+          className="absolute inset-0 transform-gpu"
+          style={{ y: enableMotion ? backgroundY : 0, willChange: enableMotion ? 'transform' : undefined }}
         >
           {/* Dark overlay for text contrast */}
           <div className="absolute inset-0 bg-charcoal" />
           
           {/* Animated gradient orbs */}
-          {!prefersReducedMotion && (
+          {enableMotion && (
             <>
               <motion.div
-                className="absolute w-[800px] h-[800px] rounded-full"
+                className="absolute w-[800px] h-[800px] rounded-full transform-gpu will-change-transform"
                 style={{
                   background: 'radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%)',
                   top: '-20%',
@@ -128,7 +152,7 @@ export function HeroAgency() {
                 transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
               />
               <motion.div
-                className="absolute w-[600px] h-[600px] rounded-full"
+                className="absolute w-[600px] h-[600px] rounded-full transform-gpu will-change-transform"
                 style={{
                   background: 'radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%)',
                   bottom: '-10%',
@@ -163,36 +187,37 @@ export function HeroAgency() {
 
       {/* Content */}
       <motion.div 
-        className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-8 lg:px-12 py-32"
-        style={{ opacity: prefersReducedMotion ? 1 : opacity }}
+        className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-8 lg:px-12 py-32 will-change-opacity"
+        style={{ opacity: enableMotion ? opacity : 1 }}
       >
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center min-h-[60vh]">
           {/* Left: Minimal text */}
           <div className="order-2 lg:order-1">
             <motion.div
-              initial={{ opacity: 0, y: 40 }}
+              initial={enableMotion ? { opacity: 0, y: 40 } : { opacity: 1, y: 0 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: prefersReducedMotion ? 0 : 0.8, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: enableMotion ? 0.8 : 0, ease: [0.16, 1, 0.3, 1] }}
+              className="will-change-transform will-change-opacity"
             >
-              {/* Hidden H1 for SEO */}
-              <h1 className="sr-only">Pure Craft — Digital Marketing Agency in Nepal</h1>
-              
-              {/* Visual headline */}
-              <span className="font-serif text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-primary-foreground leading-[0.95] block mb-6">
-                AI Marketing<br />
-                <span className="text-primary-foreground/60">for Real Growth</span>
-              </span>
-              
+              <h1 className="font-serif text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-primary-foreground leading-[0.95] block mb-6">
+                Results-Driven Digital<br />
+                <span className="text-primary-foreground/60">Marketing Agency</span>
+              </h1>
+
               <p className="text-lg md:text-xl text-primary-foreground/70 max-w-md mb-8">
-                Performance-focused digital marketing in Nepal.
+                Lead generation, social media marketing, and AI appointment setting for Nepalese businesses.
               </p>
-              
+
               <div className="flex flex-col sm:flex-row gap-4">
                 <motion.button
+                  type="button"
                   onClick={handlePrimaryCTA}
-                  className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-primary-foreground text-charcoal font-semibold rounded-full shadow-depth-4"
-                  whileHover={prefersReducedMotion ? {} : { scale: 1.03 }}
-                  whileTap={prefersReducedMotion ? {} : { scale: 0.97 }}
+                  className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-primary-foreground text-charcoal font-semibold rounded-full shadow-depth-4 transform-gpu transition-shadow duration-150"
+                  aria-label="Book a demo"
+                  style={{ willChange: 'transform' }}
+                  whileHover={disableHeavyMotion ? {} : { scale: 1.03, boxShadow: '0 18px 38px -22px rgba(255,255,255,0.35)', transition: { duration: 0.12, ease: 'easeOut', delay: 0.04 } }}
+                  whileTap={disableHeavyMotion ? {} : { scale: 0.98 }}
+                  transition={{ duration: disableHeavyMotion ? 0 : 0.12, ease: 'easeOut' }}
                 >
                   Book Demo
                   <ArrowUpRight className="w-5 h-5" />
@@ -211,6 +236,7 @@ export function HeroAgency() {
               delay={0.3}
               position="top-0 left-0 md:-left-8"
               reduced={prefersReducedMotion}
+              disableMotion={disableHeavyMotion}
             />
             <FloatingKPI 
               value="47%" 
@@ -219,6 +245,7 @@ export function HeroAgency() {
               delay={0.5}
               position="top-24 right-0 md:-right-4"
               reduced={prefersReducedMotion}
+              disableMotion={disableHeavyMotion}
             />
             <FloatingKPI 
               value="23" 
@@ -227,14 +254,15 @@ export function HeroAgency() {
               delay={0.7}
               position="bottom-20 left-4 md:left-12"
               reduced={prefersReducedMotion}
+              disableMotion={disableHeavyMotion}
             />
             
             {/* Center visual: Glowing dashboard mockup */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
+              initial={enableMotion ? { opacity: 0, scale: 0.9 } : { opacity: 1, scale: 1 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.2, duration: prefersReducedMotion ? 0 : 0.8 }}
-              className="relative mx-auto max-w-sm lg:max-w-md"
+              transition={{ delay: enableMotion ? 0.2 : 0, duration: enableMotion ? 0.8 : 0 }}
+              className="relative mx-auto max-w-sm lg:max-w-md will-change-transform will-change-opacity transform-gpu"
             >
               {/* Glow effect */}
               <div className="absolute inset-0 bg-primary-foreground/10 rounded-3xl blur-3xl" />
@@ -255,12 +283,12 @@ export function HeroAgency() {
                   {[40, 65, 45, 80, 60, 90, 75].map((height, i) => (
                     <motion.div
                       key={i}
-                      className="flex-1 bg-gradient-to-t from-primary-foreground/40 to-primary-foreground/80 rounded-t-lg"
-                      initial={{ height: 0 }}
+                      className="flex-1 bg-gradient-to-t from-primary-foreground/40 to-primary-foreground/80 rounded-t-lg transform-gpu will-change-transform"
+                      initial={enableMotion ? { height: 0 } : { height: `${height}%` }}
                       animate={{ height: `${height}%` }}
                       transition={{ 
-                        delay: 0.8 + i * 0.1, 
-                        duration: prefersReducedMotion ? 0 : 0.6,
+                        delay: enableMotion ? 0.8 + i * 0.1 : 0, 
+                        duration: enableMotion ? 0.6 : 0,
                         ease: [0.16, 1, 0.3, 1]
                       }}
                     />
@@ -276,10 +304,10 @@ export function HeroAgency() {
                   ].map((stat, i) => (
                     <motion.div
                       key={stat.label}
-                      initial={{ opacity: 0, y: 10 }}
+                      initial={enableMotion ? { opacity: 0, y: 10 } : { opacity: 1, y: 0 }}
                       animate={{ opacity: 1, y: 0 }}
-                      transition={{ delay: 1.2 + i * 0.1, duration: prefersReducedMotion ? 0 : 0.4 }}
-                      className="text-center"
+                      transition={{ delay: enableMotion ? 1.2 + i * 0.1 : 0, duration: enableMotion ? 0.4 : 0 }}
+                      className="text-center will-change-transform will-change-opacity"
                     >
                       <p className="font-serif text-lg md:text-xl text-primary-foreground">{stat.value}</p>
                       <p className="text-caption text-primary-foreground/60">{stat.label}</p>
@@ -291,12 +319,12 @@ export function HeroAgency() {
 
             {/* Lead notification - positioned at bottom */}
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={enableMotion ? { opacity: 0, y: 20 } : { opacity: 1, y: 0 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 1, duration: prefersReducedMotion ? 0 : 0.5 }}
+              transition={{ delay: enableMotion ? 1 : 0, duration: enableMotion ? 0.5 : 0 }}
               className="absolute -bottom-4 right-0 md:right-8 hidden md:block"
             >
-              <LeadNotification reduced={prefersReducedMotion} />
+              <LeadNotification reduced={prefersReducedMotion} disableMotion={disableHeavyMotion} />
             </motion.div>
           </div>
         </div>
@@ -304,15 +332,15 @@ export function HeroAgency() {
 
       {/* Scroll indicator */}
       <motion.div
-        className="absolute bottom-8 left-1/2 -translate-x-1/2"
-        initial={{ opacity: 0 }}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2 transform-gpu will-change-opacity"
+        initial={enableMotion ? { opacity: 0 } : { opacity: 1 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 1.5 }}
+        transition={{ delay: enableMotion ? 1.5 : 0 }}
       >
         <motion.div
-          className="w-6 h-10 rounded-full border-2 border-primary-foreground/30 flex justify-center pt-2"
-          animate={prefersReducedMotion ? {} : { y: [0, 5, 0] }}
-          transition={{ duration: 2, repeat: Infinity }}
+          className="w-6 h-10 rounded-full border-2 border-primary-foreground/30 flex justify-center pt-2 transform-gpu will-change-transform"
+          animate={enableMotion ? { y: [0, 5, 0] } : { y: 0 }}
+          transition={{ duration: enableMotion ? 2 : 0, repeat: enableMotion ? Infinity : 0 }}
         >
           <div className="w-1.5 h-1.5 rounded-full bg-primary-foreground/60" />
         </motion.div>
