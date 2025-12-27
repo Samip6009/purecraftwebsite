@@ -6,13 +6,14 @@
 import { motion, useReducedMotion } from 'framer-motion';
 import { Container, Section } from '@/components/layout/SiteShell';
 
-// Services with visual focus
+// Services with visual focus and SEO-friendly alt texts
 const services = [
   {
     id: 'paid-ads',
     title: 'Paid Ads',
     benefit: 'Meta & Google that convert',
     visual: '/assets/photos/service-ads.jpg',
+    alt: 'Paid advertising campaign management for Nepal businesses - Meta and Google Ads',
     icon: '📱',
   },
   {
@@ -20,6 +21,7 @@ const services = [
     title: 'Funnels',
     benefit: 'Landing pages that capture',
     visual: '/assets/photos/service-funnels.jpg',
+    alt: 'High-converting landing page and sales funnel design',
     icon: '🎯',
   },
   {
@@ -27,6 +29,7 @@ const services = [
     title: 'Lead CRM',
     benefit: 'Automated follow-up',
     visual: '/assets/photos/service-crm.jpg',
+    alt: 'Lead management CRM with automated follow-up for Nepal marketing',
     icon: '📊',
   },
   {
@@ -34,6 +37,7 @@ const services = [
     title: 'AI Booking',
     benefit: 'Calendar fills itself',
     visual: '/assets/photos/service-calendar.jpg',
+    alt: 'AI-powered appointment booking and calendar automation system',
     icon: '📅',
   },
   {
@@ -41,6 +45,7 @@ const services = [
     title: 'Reporting',
     benefit: 'Know what works',
     visual: '/assets/photos/service-reports.jpg',
+    alt: 'Performance marketing analytics and reporting dashboard',
     icon: '📈',
   },
 ];
@@ -68,7 +73,7 @@ const ServiceTile = ({
       <div className="absolute inset-0">
         <img
           src={service.visual}
-          alt={service.title}
+          alt={service.alt}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
           loading="lazy"
         />
@@ -101,9 +106,22 @@ export function ServicesVisual() {
   const prefersReducedMotion = useReducedMotion() ?? false;
 
   return (
-    <Section id="services" className="bg-surface-2/30">
-      <Container size="wide">
-        {/* Minimal header */}
+    <Section id="services" className="relative bg-surface-2/30 overflow-hidden">
+      {/* Background visual layer */}
+      <div className="absolute inset-0 pointer-events-none">
+        {/* Diagonal lines pattern */}
+        <div 
+          className="absolute inset-0 opacity-20"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M-10,10 l20,-20 M0,40 l40,-40 M30,50 l20,-20' stroke='%23000' stroke-opacity='0.03' stroke-width='1'/%3E%3C/svg%3E")`,
+          }}
+        />
+        {/* Subtle gradient overlay */}
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-surface-2/20 to-transparent" />
+      </div>
+      
+      <Container size="wide" className="relative z-10">
+        {/* Header with SEO */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -112,7 +130,7 @@ export function ServicesVisual() {
           className="text-center mb-10"
         >
           <h2 className="font-serif text-h2 text-text-primary mb-2">
-            What we do.
+            Performance Marketing for Nepal Businesses
           </h2>
           <p className="text-body text-text-secondary">
             Full-stack growth. No gaps.

@@ -18,8 +18,8 @@ const Index = () => {
   return (
     <SiteShell>
       <SEOHead 
-        title="Pure Craft | Performance Marketing Agency"
-        description="We turn ads into sales. Performance marketing with real leads, real results. Book a demo today."
+        title="Digital Marketing Agency in Nepal"
+        description="Pure Craft is Nepal's leading digital marketing agency. Performance-driven marketing, AI appointment setting, and lead generation for growing businesses. Book a demo today."
       />
       <Header />
       

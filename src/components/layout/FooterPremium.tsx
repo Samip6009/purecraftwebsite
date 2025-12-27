@@ -59,16 +59,26 @@ export function FooterPremium() {
   };
 
   return (
-    <footer className="bg-surface-2 border-t border-border">
+    <footer className="relative bg-surface-2 border-t border-border overflow-hidden">
+      {/* Background pattern */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div 
+          className="absolute inset-0 opacity-20"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M 40 0 L 0 0 0 40' fill='none' stroke='%23000' stroke-opacity='0.02' stroke-width='1'/%3E%3C/svg%3E")`,
+          }}
+        />
+      </div>
+      
       {/* Main Footer */}
-      <Container size="wide" className="py-16 md:py-20">
+      <Container size="wide" className="relative z-10 py-16 md:py-20">
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 lg:gap-12">
           {/* Brand Column */}
           <div className="col-span-2 lg:col-span-1">
             <a href="/" className="inline-flex items-center gap-3 mb-6">
               <img 
                 src={pureCraftLogo} 
-                alt="Pure Craft" 
+                alt="Pure Craft - Digital Marketing Agency Nepal" 
                 className="h-10 w-auto"
                 width={40}
                 height={40}
@@ -79,8 +89,9 @@ export function FooterPremium() {
               </span>
             </a>
             
+            {/* Nepal-focused SEO text */}
             <p className="text-small text-text-secondary mb-6 max-w-xs">
-              Premium digital marketing and AI automation for businesses that demand excellence.
+              Pure Craft is a digital marketing agency in Nepal helping businesses grow through performance marketing.
             </p>
 
             {/* Social Links */}

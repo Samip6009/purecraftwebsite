@@ -185,20 +185,48 @@ export function HeroAgency() {
 
   return (
     <section className="relative min-h-[90vh] flex items-center pt-20 pb-12 md:pt-24 overflow-hidden">
-      {/* Subtle gradient bg */}
-      <div className="absolute inset-0 bg-gradient-to-br from-surface-2/40 via-background to-background" />
+      {/* Premium animated gradient mesh background */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-surface-2/60 via-background to-surface-3/40" />
+        {/* Animated gradient orbs */}
+        {!prefersReducedMotion && (
+          <>
+            <motion.div
+              className="absolute w-[600px] h-[600px] rounded-full bg-gradient-to-br from-charcoal/[0.04] to-transparent blur-3xl"
+              animate={{ x: [0, 80, 0], y: [0, 40, 0], scale: [1, 1.1, 1] }}
+              transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
+              style={{ top: '5%', left: '5%' }}
+            />
+            <motion.div
+              className="absolute w-[500px] h-[500px] rounded-full bg-gradient-to-tl from-charcoal-light/[0.03] to-transparent blur-3xl"
+              animate={{ x: [0, -60, 0], y: [0, 60, 0] }}
+              transition={{ duration: 25, repeat: Infinity, ease: 'easeInOut' }}
+              style={{ bottom: '10%', right: '5%' }}
+            />
+          </>
+        )}
+        {/* Subtle dot pattern */}
+        <div 
+          className="absolute inset-0 opacity-40"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='20' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='1' cy='1' r='1' fill='%23000' fill-opacity='0.04'/%3E%3C/svg%3E")`,
+          }}
+        />
+      </div>
 
       <Container size="wide" className="relative z-10">
         <div className="grid lg:grid-cols-5 gap-8 lg:gap-12 items-center">
           
           {/* LEFT: Minimal Copy (20%) */}
           <div className="lg:col-span-2 order-2 lg:order-1">
+            {/* H1 with Nepal SEO focus */}
             <motion.h1
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: prefersReducedMotion ? 0 : 0.6 }}
               className="font-serif text-display text-text-primary mb-4"
             >
+              <span className="sr-only">Pure Craft — Digital Marketing Agency in Nepal. </span>
               We turn ads<br />into sales.
             </motion.h1>
 
@@ -206,9 +234,19 @@ export function HeroAgency() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: prefersReducedMotion ? 0 : 0.5, delay: 0.15 }}
-              className="text-xl text-text-secondary mb-8"
+              className="text-xl text-text-secondary mb-3"
             >
               Performance marketing. Real leads.
+            </motion.p>
+            
+            {/* Nepal trust signal */}
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.25 }}
+              className="text-small text-text-muted mb-8"
+            >
+              Trusted by growing brands in Nepal
             </motion.p>
 
             <motion.div
