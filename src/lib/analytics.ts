@@ -1,53 +1,48 @@
 /**
- * Analytics Stubs - Pure Craft — Visual ROI & Media upgrade
- * Wire these up with actual tracking IDs in production
- * Privacy: Hash PII before sending to analytics
+ * Analytics Stubs - Pure Craft — Performance optimized
+ * Deferred loading for analytics to not block initial render
  */
 
 // Event names for consistent tracking
 export const ANALYTICS_EVENTS = {
-  // Page views
   PAGE_VIEW: 'page_view',
-  
-  // Conversions
   CTA_CLICK: 'cta_click',
   FORM_START: 'form_start',
   FORM_SUBMIT: 'form_submit',
   FORM_ERROR: 'form_error',
-  
-  // Engagement
   SCROLL_DEPTH: 'scroll_depth',
   TIME_ON_PAGE: 'time_on_page',
   CASE_STUDY_VIEW: 'case_study_view',
-  
-  // ROI Calculator - NEW
   ROI_CALCULATOR_USE: 'roi_calculator_use',
   ROI_PRESET_SELECTED: 'roi_preset_selected',
   ROI_EXPORTED: 'roi_exported',
   ROI_COPIED: 'roi_copied',
   ROI_TIME_HORIZON: 'roi_time_horizon',
-  
-  // Contact - NEW
   CONTACT_PREFILL: 'contact_prefill',
   CONTACT_SUBMITTED: 'contact_submitted',
-  
-  // Media - NEW
   MEDIA_PLAYED: 'media_played',
   MEDIA_PAUSED: 'media_paused',
-  
-  // Social
   SOCIAL_CLICK: 'social_click',
   SHARE: 'share',
 } as const;
 
-// Track event - stub for GA4 gtag
+// Queue for events before analytics loads
+let eventQueue: Array<{ name: string; params?: Record<string, string | number | boolean> }> = [];
+let analyticsReady = false;
+
+// Track event - queues if analytics not ready
 export function trackEvent(
   eventName: string,
   params?: Record<string, string | number | boolean>
 ) {
+  if (!analyticsReady) {
+    eventQueue.push({ name: eventName, params });
+    return;
+  }
+  
   // Check if gtag exists (GA4)
   if (typeof window !== 'undefined' && 'gtag' in window) {
-    (window as any).gtag('event', eventName, params);
+    (window as { gtag: (...args: unknown[]) => void }).gtag('event', eventName, params);
   }
   
   // Dev logging
@@ -112,24 +107,47 @@ export function trackSocialClick(platform: string) {
   });
 }
 
-// Initialize analytics (call in app entry)
+// Flush queued events
+function flushQueue() {
+  eventQueue.forEach(({ name, params }) => {
+    if (typeof window !== 'undefined' && 'gtag' in window) {
+      (window as { gtag: (...args: unknown[]) => void }).gtag('event', name, params);
+    }
+  });
+  eventQueue = [];
+}
+
+// Initialize analytics - DEFERRED (call in app entry after idle)
 export function initAnalytics() {
-  // GA4 initialization would go here
-  // Meta Pixel initialization would go here
+  if (typeof window === 'undefined') return;
   
-  if (import.meta.env.DEV) {
-    console.log('[Analytics] Initialized in dev mode');
+  // Defer analytics initialization
+  const init = () => {
+    analyticsReady = true;
+    flushQueue();
+    
+    if (import.meta.env.DEV) {
+      console.log('[Analytics] Initialized (deferred)');
+    }
+  };
+  
+  // Use requestIdleCallback for deferred init
+  if ('requestIdleCallback' in window) {
+    window.requestIdleCallback(init, { timeout: 3000 });
+  } else {
+    setTimeout(init, 200);
   }
 }
 
-// Scroll depth tracking utility
+// Scroll depth tracking utility - optimized with throttle
 export function initScrollTracking() {
   if (typeof window === 'undefined') return;
   
   const depths = [25, 50, 75, 100];
   const tracked = new Set<number>();
+  let ticking = false;
   
-  const handler = () => {
+  const checkScroll = () => {
     const scrollPercent = Math.round(
       (window.scrollY / (document.body.scrollHeight - window.innerHeight)) * 100
     );
@@ -140,6 +158,14 @@ export function initScrollTracking() {
         trackEvent(ANALYTICS_EVENTS.SCROLL_DEPTH, { depth });
       }
     });
+    ticking = false;
+  };
+  
+  const handler = () => {
+    if (!ticking) {
+      ticking = true;
+      requestAnimationFrame(checkScroll);
+    }
   };
   
   window.addEventListener('scroll', handler, { passive: true });
