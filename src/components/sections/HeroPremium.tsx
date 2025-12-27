@@ -113,14 +113,14 @@ export const heroVariants = {
  */
 export const copyVariants = {
   headlines: [
-    { line1: "AI that schedules, closes,", line2: "and scales—quietly." },
-    { line1: "Precision outreach.", line2: "Premium results." },
-    { line1: "Your calendar, filled.", line2: "Your team, focused." },
+    { line1: "Digital marketing that", line2: "drives real growth." },
+    { line1: "AI-powered leads.", line2: "Human results." },
+    { line1: "Your growth engine,", line2: "fully automated." },
   ],
   subheads: [
-    "Appointment setting engineered for enterprise ROI and human sensibility.",
-    "White-glove AI automation for founders who demand excellence.",
-    "Qualified conversations at scale, without sacrificing the personal touch.",
+    "Premium digital marketing and AI appointment setting for businesses that demand results.",
+    "Strategic campaigns engineered for enterprise ROI and measurable growth.",
+    "From awareness to conversion—we build the systems that scale your business.",
   ],
 };
 
