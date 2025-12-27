@@ -1,7 +1,6 @@
 /**
  * Pure Craft - Premium SMMA Agency
- * samipkc.com.np - 80% visual, 20% text
- * HARD RESET: Visual-first, conversion-focused
+ * samipkc.com.np - Visual-first, 80/20 design
  */
 import { SiteShell } from '@/components/layout/SiteShell';
 import { Header } from '@/components/layout/Header';
@@ -9,9 +8,9 @@ import { HeroAgency } from '@/components/sections/HeroAgency';
 import { VisualProof } from '@/components/sections/VisualProof';
 import { ServicesVisual } from '@/components/sections/ServicesVisual';
 import { GrowthDiagnostic } from '@/components/sections/GrowthDiagnostic';
-import { SocialProofHuman } from '@/components/sections/SocialProofHuman';
 import { ContactFormPremium } from '@/components/sections/ContactFormPremium';
 import { FooterPremium } from '@/components/layout/FooterPremium';
+import { MobileStickyCTA } from '@/components/ui/MobileStickyCTA';
 import { SEOHead } from '@/lib/seo';
 
 const Index = () => {
@@ -19,31 +18,31 @@ const Index = () => {
     <SiteShell>
       <SEOHead 
         title="Digital Marketing Agency in Nepal"
-        description="Pure Craft is Nepal's leading digital marketing agency. Performance-driven marketing, AI appointment setting, and lead generation for growing businesses. Book a demo today."
+        description="Pure Craft is Nepal's leading digital marketing agency. AI-powered marketing, appointment setting, and lead generation for growing businesses. Book a demo today."
       />
       <Header />
       
       <main id="main-content">
-        {/* Hero: Visual montage + minimal copy */}
+        {/* Hero: Full visual takeover */}
         <HeroAgency />
         
-        {/* Results: Photo/video cards with metrics */}
+        {/* Results: Visual proof cards */}
         <VisualProof />
         
-        {/* Services: Visual workflow tiles */}
+        {/* Services: Visual tiles */}
         <ServicesVisual />
         
-        {/* Diagnostic: Visual funnel, not calculator */}
+        {/* Diagnostic: Visual funnel */}
         <GrowthDiagnostic />
         
-        {/* Social Proof: Human photos, 1-line quotes */}
-        <SocialProofHuman />
-        
-        {/* Contact: Phone-first, multi-step */}
+        {/* Contact: Visual card form */}
         <ContactFormPremium />
       </main>
       
       <FooterPremium />
+      
+      {/* Mobile sticky CTA */}
+      <MobileStickyCTA />
     </SiteShell>
   );
 };

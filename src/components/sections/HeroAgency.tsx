@@ -1,156 +1,88 @@
 /**
- * HeroAgency.tsx - Premium SMMA Hero
- * Pure Craft - 80% visual, 20% text
- * Features: Video montage, minimal copy, instant authority
+ * HeroAgency.tsx - Premium Full-Visual Hero
+ * Pure Craft SMMA - Full visual takeover with floating UI
+ * 80% visual, 20% text - instant authority
  */
-import { useState, useRef, useEffect } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
-import { ArrowUpRight, Play, Pause, Calendar, MessageSquare, TrendingUp } from 'lucide-react';
-import { Container } from '@/components/layout/SiteShell';
-import { trackCTAClick, trackEvent } from '@/lib/analytics';
+import { useState, useEffect } from 'react';
+import { motion, useReducedMotion, useScroll, useTransform } from 'framer-motion';
+import { ArrowUpRight, Calendar, TrendingUp, Users, Zap } from 'lucide-react';
+import { trackCTAClick } from '@/lib/analytics';
 
-// Animated metric cards that cycle
-const liveMetrics = [
-  { value: '23', label: 'calls booked today', icon: Calendar },
-  { value: '8.2x', label: 'avg client ROAS', icon: TrendingUp },
-  { value: '47%', label: 'close rate', icon: MessageSquare },
-];
+// Animated KPI card
+const FloatingKPI = ({ 
+  value, 
+  label, 
+  icon: Icon, 
+  delay, 
+  position,
+  reduced 
+}: { 
+  value: string; 
+  label: string; 
+  icon: React.ElementType;
+  delay: number;
+  position: string;
+  reduced: boolean;
+}) => (
+  <motion.div
+    initial={{ opacity: 0, scale: 0.8, y: 20 }}
+    animate={{ opacity: 1, scale: 1, y: 0 }}
+    transition={{ delay, duration: reduced ? 0 : 0.6, ease: [0.16, 1, 0.3, 1] }}
+    className={`absolute ${position} z-20`}
+  >
+    <motion.div 
+      className="bg-background/95 backdrop-blur-xl rounded-2xl border border-border/50 shadow-depth-4 p-4 md:p-5"
+      animate={reduced ? {} : { y: [0, -8, 0] }}
+      transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: delay * 2 }}
+    >
+      <div className="flex items-center gap-3">
+        <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-surface-2 flex items-center justify-center">
+          <Icon className="w-5 h-5 md:w-6 md:h-6 text-text-primary" />
+        </div>
+        <div>
+          <p className="font-serif text-xl md:text-2xl text-text-primary font-medium">{value}</p>
+          <p className="text-caption text-text-muted">{label}</p>
+        </div>
+      </div>
+    </motion.div>
+  </motion.div>
+);
 
-// Animated inbox/CRM simulation
-const AnimatedInbox = () => {
-  const [activeIndex, setActiveIndex] = useState(0);
+// Animated lead notification
+const LeadNotification = ({ reduced }: { reduced: boolean }) => {
+  const [currentLead, setCurrentLead] = useState(0);
   const leads = [
-    { name: 'Sarah M.', company: 'TechFlow', time: 'Just now', status: 'New Lead' },
-    { name: 'James K.', company: 'Wellness Co', time: '2m ago', status: 'Call Scheduled' },
-    { name: 'Maria L.', company: 'GrowthHQ', time: '5m ago', status: 'Demo Booked' },
+    { name: 'Sarah M.', action: 'booked a demo', time: 'Just now' },
+    { name: 'James K.', action: 'requested callback', time: '2m ago' },
+    { name: 'Priya S.', action: 'started trial', time: '5m ago' },
   ];
 
   useEffect(() => {
+    if (reduced) return;
     const interval = setInterval(() => {
-      setActiveIndex((prev) => (prev + 1) % leads.length);
-    }, 2500);
-    return () => clearInterval(interval);
-  }, []);
-
-  return (
-    <div className="bg-card/95 backdrop-blur-sm rounded-xl border border-border shadow-depth-3 overflow-hidden">
-      <div className="px-4 py-3 bg-surface-2 border-b border-border flex items-center gap-2">
-        <div className="flex gap-1.5">
-          <div className="w-3 h-3 rounded-full bg-red-400" />
-          <div className="w-3 h-3 rounded-full bg-yellow-400" />
-          <div className="w-3 h-3 rounded-full bg-green-400" />
-        </div>
-        <span className="text-caption text-text-muted ml-2">Lead Inbox</span>
-      </div>
-      <div className="p-2">
-        {leads.map((lead, i) => (
-          <motion.div
-            key={lead.name}
-            initial={false}
-            animate={{ 
-              opacity: i === activeIndex ? 1 : 0.4,
-              scale: i === activeIndex ? 1 : 0.98,
-              y: i === activeIndex ? 0 : 2,
-            }}
-            className={`p-3 rounded-lg mb-1 transition-colors ${
-              i === activeIndex ? 'bg-surface-2' : 'bg-transparent'
-            }`}
-          >
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-full bg-charcoal/10 flex items-center justify-center text-caption font-medium text-text-primary">
-                  {lead.name.charAt(0)}
-                </div>
-                <div>
-                  <p className="text-small font-medium text-text-primary">{lead.name}</p>
-                  <p className="text-caption text-text-muted">{lead.company}</p>
-                </div>
-              </div>
-              <div className="text-right">
-                <span className="text-[10px] px-2 py-1 rounded-full bg-green-100 text-green-700 font-medium">
-                  {lead.status}
-                </span>
-                <p className="text-[10px] text-text-muted mt-1">{lead.time}</p>
-              </div>
-            </div>
-          </motion.div>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-// Calendar filling animation
-const AnimatedCalendar = () => {
-  const [filledSlots, setFilledSlots] = useState<number[]>([]);
-  const slots = Array(12).fill(null);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setFilledSlots((prev) => {
-        if (prev.length >= 8) return [Math.floor(Math.random() * 12)];
-        const available = slots.map((_, i) => i).filter((i) => !prev.includes(i));
-        if (available.length === 0) return prev;
-        const next = available[Math.floor(Math.random() * available.length)];
-        return [...prev, next];
-      });
-    }, 800);
-    return () => clearInterval(interval);
-  }, []);
-
-  return (
-    <div className="bg-card/95 backdrop-blur-sm rounded-xl border border-border shadow-depth-3 p-4">
-      <div className="flex items-center justify-between mb-3">
-        <span className="text-small font-medium text-text-primary">This Week</span>
-        <span className="text-caption text-green-600 font-medium">{filledSlots.length} booked</span>
-      </div>
-      <div className="grid grid-cols-4 gap-2">
-        {slots.map((_, i) => (
-          <motion.div
-            key={i}
-            initial={false}
-            animate={{
-              backgroundColor: filledSlots.includes(i) 
-                ? 'hsl(var(--charcoal))' 
-                : 'hsl(var(--surface-2))',
-              scale: filledSlots.includes(i) ? [1, 1.1, 1] : 1,
-            }}
-            className="h-8 rounded-lg"
-          />
-        ))}
-      </div>
-    </div>
-  );
-};
-
-// Live metric ticker
-const MetricTicker = () => {
-  const [index, setIndex] = useState(0);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setIndex((prev) => (prev + 1) % liveMetrics.length);
+      setCurrentLead((prev) => (prev + 1) % leads.length);
     }, 3000);
     return () => clearInterval(interval);
-  }, []);
+  }, [reduced]);
 
-  const current = liveMetrics[index];
-  const Icon = current.icon;
+  const lead = leads[currentLead];
 
   return (
     <motion.div
-      key={index}
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -10 }}
-      className="bg-card/95 backdrop-blur-sm rounded-xl border border-border shadow-depth-2 p-4 flex items-center gap-3"
+      key={currentLead}
+      initial={{ opacity: 0, x: -20 }}
+      animate={{ opacity: 1, x: 0 }}
+      exit={{ opacity: 0, x: 20 }}
+      className="bg-background/95 backdrop-blur-xl rounded-2xl border border-border/50 shadow-depth-3 p-4"
     >
-      <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center">
-        <Icon className="w-5 h-5 text-green-600" />
-      </div>
-      <div>
-        <p className="font-serif text-2xl text-text-primary">{current.value}</p>
-        <p className="text-caption text-text-muted">{current.label}</p>
+      <div className="flex items-center gap-3">
+        <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+          <span className="text-lg">✓</span>
+        </div>
+        <div>
+          <p className="text-small font-medium text-text-primary">{lead.name} {lead.action}</p>
+          <p className="text-caption text-text-muted">{lead.time}</p>
+        </div>
       </div>
     </motion.div>
   );
@@ -158,214 +90,233 @@ const MetricTicker = () => {
 
 export function HeroAgency() {
   const prefersReducedMotion = useReducedMotion() ?? false;
-  const [isPlaying, setIsPlaying] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
+  const { scrollY } = useScroll();
+  const backgroundY = useTransform(scrollY, [0, 500], [0, 150]);
+  const opacity = useTransform(scrollY, [0, 400], [1, 0]);
 
   const handlePrimaryCTA = () => {
     trackCTAClick('Book Demo', 'hero_agency', '#contact');
     document.getElementById('contact')?.scrollIntoView({ behavior: 'smooth' });
   };
 
-  const handleSecondaryCTA = () => {
-    trackCTAClick('See How It Works', 'hero_agency', '#services');
-    document.getElementById('services')?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  const toggleVideo = () => {
-    if (videoRef.current) {
-      if (isPlaying) {
-        videoRef.current.pause();
-      } else {
-        videoRef.current.play();
-        trackEvent('media_played', { mediaId: 'hero-reel' });
-      }
-      setIsPlaying(!isPlaying);
-    }
-  };
-
   return (
-    <section className="relative min-h-[90vh] flex items-center pt-20 pb-12 md:pt-24 overflow-hidden">
-      {/* Premium animated gradient mesh background */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-surface-2/60 via-background to-surface-3/40" />
-        {/* Animated gradient orbs */}
-        {!prefersReducedMotion && (
-          <>
-            <motion.div
-              className="absolute w-[600px] h-[600px] rounded-full bg-gradient-to-br from-charcoal/[0.04] to-transparent blur-3xl"
-              animate={{ x: [0, 80, 0], y: [0, 40, 0], scale: [1, 1.1, 1] }}
-              transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
-              style={{ top: '5%', left: '5%' }}
-            />
-            <motion.div
-              className="absolute w-[500px] h-[500px] rounded-full bg-gradient-to-tl from-charcoal-light/[0.03] to-transparent blur-3xl"
-              animate={{ x: [0, -60, 0], y: [0, 60, 0] }}
-              transition={{ duration: 25, repeat: Infinity, ease: 'easeInOut' }}
-              style={{ bottom: '10%', right: '5%' }}
-            />
-          </>
-        )}
-        {/* Subtle dot pattern */}
-        <div 
-          className="absolute inset-0 opacity-40"
-          style={{
-            backgroundImage: `url("data:image/svg+xml,%3Csvg width='20' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='1' cy='1' r='1' fill='%23000' fill-opacity='0.04'/%3E%3C/svg%3E")`,
-          }}
-        />
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* Full-screen animated background */}
+      <div className="absolute inset-0">
+        {/* Base gradient mesh */}
+        <motion.div 
+          className="absolute inset-0"
+          style={{ y: prefersReducedMotion ? 0 : backgroundY }}
+        >
+          {/* Dark overlay for text contrast */}
+          <div className="absolute inset-0 bg-charcoal" />
+          
+          {/* Animated gradient orbs */}
+          {!prefersReducedMotion && (
+            <>
+              <motion.div
+                className="absolute w-[800px] h-[800px] rounded-full"
+                style={{
+                  background: 'radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%)',
+                  top: '-20%',
+                  right: '-10%',
+                }}
+                animate={{ 
+                  scale: [1, 1.2, 1],
+                  rotate: [0, 45, 0],
+                }}
+                transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
+              />
+              <motion.div
+                className="absolute w-[600px] h-[600px] rounded-full"
+                style={{
+                  background: 'radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%)',
+                  bottom: '-10%',
+                  left: '-5%',
+                }}
+                animate={{ 
+                  scale: [1, 1.15, 1],
+                  rotate: [0, -30, 0],
+                }}
+                transition={{ duration: 25, repeat: Infinity, ease: 'easeInOut' }}
+              />
+            </>
+          )}
+          
+          {/* Noise texture overlay */}
+          <div 
+            className="absolute inset-0 opacity-[0.03]"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)'/%3E%3C/svg%3E")`,
+            }}
+          />
+          
+          {/* Subtle grid pattern */}
+          <div 
+            className="absolute inset-0 opacity-[0.04]"
+            style={{
+              backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M 60 0 L 0 0 0 60' fill='none' stroke='%23fff' stroke-width='0.5'/%3E%3C/svg%3E")`,
+            }}
+          />
+        </motion.div>
       </div>
 
-      <Container size="wide" className="relative z-10">
-        <div className="grid lg:grid-cols-5 gap-8 lg:gap-12 items-center">
-          
-          {/* LEFT: Minimal Copy (20%) */}
-          <div className="lg:col-span-2 order-2 lg:order-1">
-            {/* H1 with Nepal SEO focus */}
-            <motion.h1
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: prefersReducedMotion ? 0 : 0.6 }}
-              className="font-serif text-display text-text-primary mb-4"
-            >
-              <span className="sr-only">Pure Craft — Digital Marketing Agency in Nepal. </span>
-              We turn ads<br />into sales.
-            </motion.h1>
-
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: prefersReducedMotion ? 0 : 0.5, delay: 0.15 }}
-              className="text-xl text-text-secondary mb-3"
-            >
-              Performance marketing. Real leads.
-            </motion.p>
-            
-            {/* Nepal trust signal */}
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.25 }}
-              className="text-small text-text-muted mb-8"
-            >
-              Trusted by growing brands in Nepal
-            </motion.p>
-
+      {/* Content */}
+      <motion.div 
+        className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-8 lg:px-12 py-32"
+        style={{ opacity: prefersReducedMotion ? 1 : opacity }}
+      >
+        <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center min-h-[60vh]">
+          {/* Left: Minimal text */}
+          <div className="order-2 lg:order-1">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: prefersReducedMotion ? 0 : 0.5, delay: 0.25 }}
-              className="flex flex-col sm:flex-row gap-3"
+              transition={{ duration: prefersReducedMotion ? 0 : 0.8, ease: [0.16, 1, 0.3, 1] }}
             >
-              <motion.button
-                onClick={handlePrimaryCTA}
-                className="inline-flex items-center justify-center gap-2 px-7 py-4 bg-primary text-primary-foreground font-medium rounded-full shadow-depth-3"
-                whileHover={prefersReducedMotion ? {} : { scale: 1.03 }}
-                whileTap={prefersReducedMotion ? {} : { scale: 0.97 }}
-              >
-                Book Demo
-                <ArrowUpRight className="w-5 h-5" />
-              </motion.button>
-
-              <motion.button
-                onClick={handleSecondaryCTA}
-                className="inline-flex items-center justify-center gap-2 px-6 py-4 text-text-primary font-medium rounded-full border border-border hover:bg-surface-2 transition-colors"
-                whileHover={prefersReducedMotion ? {} : { scale: 1.02 }}
-                whileTap={prefersReducedMotion ? {} : { scale: 0.98 }}
-              >
-                See How It Works
-              </motion.button>
+              {/* Hidden H1 for SEO */}
+              <h1 className="sr-only">Pure Craft — Digital Marketing Agency in Nepal</h1>
+              
+              {/* Visual headline */}
+              <span className="font-serif text-5xl sm:text-6xl md:text-7xl lg:text-8xl text-primary-foreground leading-[0.95] block mb-6">
+                AI Marketing<br />
+                <span className="text-primary-foreground/60">for Real Growth</span>
+              </span>
+              
+              <p className="text-lg md:text-xl text-primary-foreground/70 max-w-md mb-8">
+                Performance-focused digital marketing in Nepal.
+              </p>
+              
+              <div className="flex flex-col sm:flex-row gap-4">
+                <motion.button
+                  onClick={handlePrimaryCTA}
+                  className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-primary-foreground text-charcoal font-semibold rounded-full shadow-depth-4"
+                  whileHover={prefersReducedMotion ? {} : { scale: 1.03 }}
+                  whileTap={prefersReducedMotion ? {} : { scale: 0.97 }}
+                >
+                  Book Demo
+                  <ArrowUpRight className="w-5 h-5" />
+                </motion.button>
+              </div>
             </motion.div>
           </div>
 
-          {/* RIGHT: Visual Montage (80%) */}
-          <div className="lg:col-span-3 order-1 lg:order-2">
+          {/* Right: Visual dashboard mockup area */}
+          <div className="order-1 lg:order-2 relative">
+            {/* Floating KPI cards */}
+            <FloatingKPI 
+              value="8.2x" 
+              label="Avg ROAS" 
+              icon={TrendingUp}
+              delay={0.3}
+              position="top-0 left-0 md:-left-8"
+              reduced={prefersReducedMotion}
+            />
+            <FloatingKPI 
+              value="47%" 
+              label="Close Rate" 
+              icon={Users}
+              delay={0.5}
+              position="top-24 right-0 md:-right-4"
+              reduced={prefersReducedMotion}
+            />
+            <FloatingKPI 
+              value="23" 
+              label="Demos/Week" 
+              icon={Calendar}
+              delay={0.7}
+              position="bottom-20 left-4 md:left-12"
+              reduced={prefersReducedMotion}
+            />
+            
+            {/* Center visual: Glowing dashboard mockup */}
             <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
+              initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: prefersReducedMotion ? 0 : 0.7 }}
-              className="relative"
+              transition={{ delay: 0.2, duration: prefersReducedMotion ? 0 : 0.8 }}
+              className="relative mx-auto max-w-sm lg:max-w-md"
             >
-              {/* Main video/visual area */}
-              <div className="relative aspect-[4/3] rounded-2xl overflow-hidden bg-surface-2 shadow-depth-4">
-                {/* Video placeholder with overlay visuals */}
-                <video
-                  ref={videoRef}
-                  className="absolute inset-0 w-full h-full object-cover"
-                  poster="/assets/photos/agency-hero-poster.jpg"
-                  muted
-                  loop
-                  playsInline
-                  preload="metadata"
-                >
-                  <source src="/assets/videos/agency-reel.webm" type="video/webm" />
-                  <source src="/assets/videos/agency-reel.mp4" type="video/mp4" />
-                </video>
-
-                {/* Gradient overlay for contrast */}
-                <div className="absolute inset-0 bg-gradient-to-t from-charcoal/40 via-transparent to-charcoal/10" />
-
-                {/* Play button */}
-                <button
-                  onClick={toggleVideo}
-                  className="absolute inset-0 flex items-center justify-center group"
-                  aria-label={isPlaying ? 'Pause' : 'Play video'}
-                >
-                  <motion.div
-                    className="w-20 h-20 rounded-full bg-primary-foreground/95 flex items-center justify-center shadow-depth-4"
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    {isPlaying ? (
-                      <Pause className="w-8 h-8 text-charcoal" />
-                    ) : (
-                      <Play className="w-8 h-8 text-charcoal ml-1" />
-                    )}
-                  </motion.div>
-                </button>
-
-                {/* Bottom caption */}
-                <div className="absolute bottom-0 left-0 right-0 p-5">
-                  <p className="text-primary-foreground/90 font-medium">Watch how we work →</p>
+              {/* Glow effect */}
+              <div className="absolute inset-0 bg-primary-foreground/10 rounded-3xl blur-3xl" />
+              
+              {/* Dashboard card */}
+              <div className="relative bg-background/10 backdrop-blur-xl rounded-3xl border border-primary-foreground/10 p-6 md:p-8">
+                {/* Header */}
+                <div className="flex items-center justify-between mb-6">
+                  <div className="flex items-center gap-2">
+                    <Zap className="w-5 h-5 text-green-400" />
+                    <span className="text-small font-medium text-primary-foreground">Live Performance</span>
+                  </div>
+                  <span className="text-caption text-primary-foreground/60">Today</span>
+                </div>
+                
+                {/* Chart visualization */}
+                <div className="h-32 md:h-40 flex items-end gap-2 mb-6">
+                  {[40, 65, 45, 80, 60, 90, 75].map((height, i) => (
+                    <motion.div
+                      key={i}
+                      className="flex-1 bg-gradient-to-t from-primary-foreground/40 to-primary-foreground/80 rounded-t-lg"
+                      initial={{ height: 0 }}
+                      animate={{ height: `${height}%` }}
+                      transition={{ 
+                        delay: 0.8 + i * 0.1, 
+                        duration: prefersReducedMotion ? 0 : 0.6,
+                        ease: [0.16, 1, 0.3, 1]
+                      }}
+                    />
+                  ))}
+                </div>
+                
+                {/* Stats row */}
+                <div className="grid grid-cols-3 gap-4">
+                  {[
+                    { label: 'Leads', value: '312' },
+                    { label: 'Calls', value: '47' },
+                    { label: 'Revenue', value: '$24k' },
+                  ].map((stat, i) => (
+                    <motion.div
+                      key={stat.label}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 1.2 + i * 0.1, duration: prefersReducedMotion ? 0 : 0.4 }}
+                      className="text-center"
+                    >
+                      <p className="font-serif text-lg md:text-xl text-primary-foreground">{stat.value}</p>
+                      <p className="text-caption text-primary-foreground/60">{stat.label}</p>
+                    </motion.div>
+                  ))}
                 </div>
               </div>
+            </motion.div>
 
-              {/* Floating UI elements */}
-              <motion.div
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.5, duration: 0.5 }}
-                className="absolute -left-4 top-8 w-64 hidden lg:block"
-              >
-                <AnimatedInbox />
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.6, duration: 0.5 }}
-                className="absolute -right-4 top-1/3 w-48 hidden lg:block"
-              >
-                <AnimatedCalendar />
-              </motion.div>
-
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.7, duration: 0.5 }}
-                className="absolute -bottom-4 right-8 hidden lg:block"
-              >
-                <MetricTicker />
-              </motion.div>
-
-              {/* Mobile: Show stacked cards below video */}
-              <div className="lg:hidden mt-4 grid grid-cols-2 gap-3">
-                <div className="col-span-2">
-                  <AnimatedInbox />
-                </div>
-              </div>
+            {/* Lead notification - positioned at bottom */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 1, duration: prefersReducedMotion ? 0 : 0.5 }}
+              className="absolute -bottom-4 right-0 md:right-8 hidden md:block"
+            >
+              <LeadNotification reduced={prefersReducedMotion} />
             </motion.div>
           </div>
         </div>
-      </Container>
+      </motion.div>
+
+      {/* Scroll indicator */}
+      <motion.div
+        className="absolute bottom-8 left-1/2 -translate-x-1/2"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.5 }}
+      >
+        <motion.div
+          className="w-6 h-10 rounded-full border-2 border-primary-foreground/30 flex justify-center pt-2"
+          animate={prefersReducedMotion ? {} : { y: [0, 5, 0] }}
+          transition={{ duration: 2, repeat: Infinity }}
+        >
+          <div className="w-1.5 h-1.5 rounded-full bg-primary-foreground/60" />
+        </motion.div>
+      </motion.div>
     </section>
   );
 }

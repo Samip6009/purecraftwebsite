@@ -1,11 +1,10 @@
 /**
- * ContactFormPremium.tsx - Multi-step contact form with phone number
- * Pure Craft — Visual ROI & Media upgrade
- * Features: E.164 phone input, mobile multi-step UX, prefill support, webhook
+ * ContactFormPremium.tsx - Visual contact section
+ * Pure Craft — Card-based, gradient background, mobile-first
  */
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowUpRight, ArrowLeft, Mail, MapPin, CheckCircle2, Phone, Calendar, User, Building } from 'lucide-react';
+import { ArrowUpRight, ArrowLeft, Mail, MapPin, CheckCircle2, Phone, Calendar, User, Building, MessageCircle } from 'lucide-react';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { Container, Section } from '@/components/layout/SiteShell';
 import { trackFormStart, trackFormSubmit, trackEvent } from '@/lib/analytics';
@@ -20,7 +19,6 @@ const COUNTRY_CODES = [
   { code: '+971', country: 'UAE', flag: '🇦🇪' },
 ] as const;
 
-// Phone validation (E.164)
 const formatPhoneE164 = (countryCode: string, phone: string): string => {
   const digits = phone.replace(/\D/g, '');
   return `${countryCode}${digits}`;
@@ -38,33 +36,15 @@ const formatPhoneDisplay = (phone: string): string => {
   return `${digits.slice(0, 3)}-${digits.slice(3, 6)}-${digits.slice(6, 10)}`;
 };
 
-// Form data type
 interface FormData {
   name: string;
   email: string;
   phone: string;
   countryCode: string;
   company: string;
-  role: string;
-  monthlyLeads: string;
-  preferredTime: string;
+  businessType: string;
   message: string;
 }
-
-// Prefill data from ROI calculator or case study
-interface PrefillData {
-  source?: 'roi_calculator' | 'case_study';
-  caseId?: string;
-  projection?: number;
-  timeHorizon?: string;
-}
-
-// Step configuration
-const STEPS = {
-  1: { title: 'Contact', fields: ['name', 'email', 'phone'] },
-  2: { title: 'Company', fields: ['company', 'role', 'monthlyLeads'] },
-  3: { title: 'Schedule', fields: ['preferredTime', 'message'] },
-} as const;
 
 // Phone input component
 function PhoneInput({
@@ -84,35 +64,32 @@ function PhoneInput({
 
   return (
     <div className="relative">
-      <label className="flex items-center gap-2 text-small font-medium text-primary-foreground/80 mb-2">
+      <label className="flex items-center gap-2 text-small font-medium text-text-primary mb-2">
         <Phone className="w-4 h-4" />
         Phone Number *
       </label>
       <div className="flex">
-        {/* Country code selector */}
         <button
           type="button"
           onClick={() => setShowCodes(!showCodes)}
-          className="flex items-center gap-1 px-3 py-3 bg-primary-foreground/10 border border-primary-foreground/20 border-r-0 rounded-l-xl text-primary-foreground hover:bg-primary-foreground/15 transition-colors"
+          className="flex items-center gap-1 px-3 py-3 bg-surface-2 border border-border border-r-0 rounded-l-xl text-text-primary hover:bg-surface-3 transition-colors"
         >
           <span>{COUNTRY_CODES.find(c => c.code === countryCode)?.flag}</span>
           <span className="text-small">{countryCode}</span>
         </button>
         
-        {/* Phone input */}
         <input
           type="tel"
           value={value}
           onChange={(e) => onChange(formatPhoneDisplay(e.target.value))}
           placeholder="XXX-XXX-XXXX"
           required
-          className={`flex-1 px-4 py-3 bg-primary-foreground/10 border border-primary-foreground/20 rounded-r-xl text-primary-foreground placeholder:text-primary-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary-foreground/30 ${
+          className={`flex-1 px-4 py-3 bg-surface-2 border border-border rounded-r-xl text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-charcoal/20 ${
             error ? 'border-red-400' : ''
           }`}
         />
       </div>
 
-      {/* Country dropdown */}
       <AnimatePresence>
         {showCodes && (
           <motion.div
@@ -140,16 +117,13 @@ function PhoneInput({
         )}
       </AnimatePresence>
 
-      {error && (
-        <p className="mt-1 text-caption text-red-300">{error}</p>
-      )}
+      {error && <p className="mt-1 text-caption text-red-500">{error}</p>}
     </div>
   );
 }
 
 export function ContactFormPremium() {
   const prefersReducedMotion = useReducedMotion();
-  const [currentStep, setCurrentStep] = useState(1);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Partial<Record<keyof FormData, string>>>({});
@@ -160,30 +134,26 @@ export function ContactFormPremium() {
     phone: '',
     countryCode: '+977',
     company: '',
-    role: '',
-    monthlyLeads: '',
-    preferredTime: '',
+    businessType: '',
     message: '',
   });
 
-  // Check for prefill data from ROI calculator or case studies
+  // Check for prefill
   useEffect(() => {
     try {
       const prefillJson = sessionStorage.getItem('roiPrefill');
       if (prefillJson) {
-        const prefill: PrefillData = JSON.parse(prefillJson);
-        if (prefill.source === 'roi_calculator' && prefill.projection) {
+        const prefill = JSON.parse(prefillJson);
+        if (prefill.projection) {
           setFormData(prev => ({
             ...prev,
-            message: `I'm interested in achieving a projected revenue of $${prefill.projection?.toLocaleString()} per ${prefill.timeHorizon || 'month'}. Please share more about how Pure Craft can help.`,
+            message: `Projected revenue: $${prefill.projection?.toLocaleString()}. I'd like to learn more.`,
           }));
           trackEvent('contact_prefill', { source: 'roi_calculator' });
           sessionStorage.removeItem('roiPrefill');
         }
       }
-    } catch {
-      // Ignore parsing errors
-    }
+    } catch { /* ignore */ }
   }, []);
 
   const updateField = useCallback((field: keyof FormData, value: string) => {
@@ -191,71 +161,39 @@ export function ContactFormPremium() {
     setErrors(prev => ({ ...prev, [field]: undefined }));
   }, []);
 
-  const validateStep = (step: number): boolean => {
+  const validate = (): boolean => {
     const newErrors: Partial<Record<keyof FormData, string>> = {};
     
-    if (step === 1) {
-      if (!formData.name.trim()) newErrors.name = 'Name is required';
-      if (!formData.email.trim()) newErrors.email = 'Email is required';
-      else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-        newErrors.email = 'Invalid email format';
-      }
-      if (!formData.phone.trim()) newErrors.phone = 'Phone is required';
-      else if (!validatePhone(formData.phone)) {
-        newErrors.phone = 'Invalid phone number';
-      }
+    if (!formData.name.trim()) newErrors.name = 'Required';
+    if (!formData.email.trim()) newErrors.email = 'Required';
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = 'Invalid email';
+    }
+    if (!formData.phone.trim()) newErrors.phone = 'Required';
+    else if (!validatePhone(formData.phone)) {
+      newErrors.phone = 'Invalid phone';
     }
     
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleNext = () => {
-    if (validateStep(currentStep)) {
-      if (currentStep === 1) {
-        trackFormStart('contact');
-      }
-      setCurrentStep(prev => Math.min(prev + 1, 3));
-    }
-  };
-
-  const handleBack = () => {
-    setCurrentStep(prev => Math.max(prev - 1, 1));
-  };
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     
-    if (!validateStep(currentStep)) return;
-    
+    if (!validate()) return;
+    trackFormStart('contact');
     setIsLoading(true);
     
-    // Prepare payload with E.164 phone
     const payload = {
       ...formData,
       phoneE164: formatPhoneE164(formData.countryCode, formData.phone),
       submittedAt: new Date().toISOString(),
-      idempotencyKey: crypto.randomUUID(),
     };
     
     try {
-      // Webhook stub - replace with actual endpoint
-      // await fetch('YOUR_WEBHOOK_URL', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(payload),
-      // });
-      
       console.log('Form payload:', payload);
-      
-      // Hash email/phone for analytics privacy
       trackFormSubmit('contact', true);
-      trackEvent('contact_submitted', {
-        hasCompany: !!formData.company,
-        hasMonthlyLeads: !!formData.monthlyLeads,
-        // Don't send actual PII to analytics
-      });
-      
       setIsSubmitted(true);
     } catch {
       trackFormSubmit('contact', false);
@@ -265,333 +203,218 @@ export function ContactFormPremium() {
     }
   };
 
-  // Animation variants
-  const stepVariants = {
-    enter: { opacity: 0, x: 20 },
-    center: { opacity: 1, x: 0 },
-    exit: { opacity: 0, x: -20 },
-  };
-
   return (
-    <Section id="contact" className="bg-primary text-primary-foreground">
-      <Container size="wide">
+    <Section id="contact" className="relative overflow-hidden">
+      {/* Full visual background */}
+      <div className="absolute inset-0">
+        {/* Gradient background */}
+        <div className="absolute inset-0 bg-gradient-to-br from-charcoal via-charcoal to-charcoal-light" />
+        
+        {/* Animated gradient orbs */}
+        {!prefersReducedMotion && (
+          <>
+            <motion.div
+              className="absolute w-[600px] h-[600px] rounded-full"
+              style={{
+                background: 'radial-gradient(circle, rgba(255,255,255,0.06) 0%, transparent 70%)',
+                top: '-20%',
+                right: '-10%',
+              }}
+              animate={{ scale: [1, 1.1, 1] }}
+              transition={{ duration: 15, repeat: Infinity, ease: 'easeInOut' }}
+            />
+            <motion.div
+              className="absolute w-[400px] h-[400px] rounded-full"
+              style={{
+                background: 'radial-gradient(circle, rgba(255,255,255,0.04) 0%, transparent 70%)',
+                bottom: '-10%',
+                left: '-5%',
+              }}
+              animate={{ scale: [1, 1.15, 1] }}
+              transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
+            />
+          </>
+        )}
+        
+        {/* Grid pattern */}
+        <div 
+          className="absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M 40 0 L 0 0 0 40' fill='none' stroke='%23fff' stroke-width='0.5'/%3E%3C/svg%3E")`,
+          }}
+        />
+      </div>
+
+      <Container size="wide" className="relative z-10">
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-16">
-          {/* Left: Contact info */}
+          {/* Left: Info */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: prefersReducedMotion ? 0 : 0.6 }}
+            className="flex flex-col justify-center"
           >
-            <span className="text-caption uppercase tracking-wider text-primary-foreground/60 mb-4 block">
-              Let's Connect
-            </span>
-            <h2 className="font-serif text-h2 text-primary-foreground mb-6">
+            <h2 className="font-serif text-4xl md:text-5xl lg:text-6xl text-primary-foreground mb-6 leading-tight">
               Ready to grow?
             </h2>
-            <p className="text-body-lg text-primary-foreground/80 mb-8">
-              Share your goals. We'll create a custom growth strategy.
+            <p className="text-lg text-primary-foreground/70 mb-10 max-w-md">
+              Tell us your goals. We'll build the strategy.
             </p>
             
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <Mail className="w-5 h-5 text-primary-foreground/60" />
-                <a 
-                  href="mailto:hello@samipkc.com.np" 
-                  className="text-primary-foreground hover:text-primary-foreground/80 transition-colors"
-                >
-                  hello@samipkc.com.np
-                </a>
-              </div>
-              <div className="flex items-center gap-3">
-                <Phone className="w-5 h-5 text-primary-foreground/60" />
-                <a 
-                  href="tel:+9779800000000" 
-                  className="text-primary-foreground hover:text-primary-foreground/80 transition-colors"
-                >
-                  +977 980-000-0000
-                </a>
-              </div>
-              <div className="flex items-center gap-3">
-                <MapPin className="w-5 h-5 text-primary-foreground/60" />
-                <span className="text-primary-foreground/80">Kathmandu, Nepal</span>
+            <div className="space-y-4 mb-10">
+              <a href="mailto:hello@samipkc.com.np" className="flex items-center gap-3 text-primary-foreground/80 hover:text-primary-foreground transition-colors">
+                <Mail className="w-5 h-5" />
+                hello@samipkc.com.np
+              </a>
+              <a href="tel:+9779800000000" className="flex items-center gap-3 text-primary-foreground/80 hover:text-primary-foreground transition-colors">
+                <Phone className="w-5 h-5" />
+                +977 980-000-0000
+              </a>
+              <div className="flex items-center gap-3 text-primary-foreground/60">
+                <MapPin className="w-5 h-5" />
+                Kathmandu, Nepal
               </div>
             </div>
 
-            {/* Trust indicators */}
-            <div className="mt-10 pt-8 border-t border-primary-foreground/10">
-              <p className="text-caption text-primary-foreground/60 mb-3">Trusted by growth-focused brands</p>
-              <div className="flex gap-4 items-center opacity-60">
-                {/* Placeholder for client logos */}
-                <div className="w-16 h-8 bg-primary-foreground/20 rounded" />
-                <div className="w-20 h-8 bg-primary-foreground/20 rounded" />
-                <div className="w-14 h-8 bg-primary-foreground/20 rounded" />
-              </div>
+            {/* Quick action buttons */}
+            <div className="flex flex-wrap gap-3">
+              <a
+                href="tel:+9779800000000"
+                className="inline-flex items-center gap-2 px-5 py-3 bg-primary-foreground/10 border border-primary-foreground/20 rounded-full text-primary-foreground hover:bg-primary-foreground/20 transition-colors"
+              >
+                <Phone className="w-4 h-4" />
+                Call Now
+              </a>
+              <a
+                href="https://wa.me/9779800000000"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 px-5 py-3 bg-green-600 rounded-full text-primary-foreground hover:bg-green-700 transition-colors"
+              >
+                <MessageCircle className="w-4 h-4" />
+                WhatsApp
+              </a>
             </div>
           </motion.div>
 
-          {/* Right: Form */}
+          {/* Right: Form Card */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ duration: prefersReducedMotion ? 0 : 0.6, delay: 0.2 }}
           >
-            {isSubmitted ? (
-              <motion.div 
-                initial={{ scale: 0.95, opacity: 0 }}
-                animate={{ scale: 1, opacity: 1 }}
-                className="bg-primary-foreground/10 rounded-2xl p-8 text-center"
-              >
-                <CheckCircle2 className="w-14 h-14 text-green-400 mx-auto mb-4" />
-                <h3 className="font-serif text-2xl text-primary-foreground mb-2">Thank you!</h3>
-                <p className="text-primary-foreground/80 mb-6">We'll be in touch within 24 hours.</p>
-                
-                {/* Quick actions */}
-                <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                  <a
-                    href="#"
-                    className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-primary-foreground/20 rounded-full text-small hover:bg-primary-foreground/30 transition-colors"
-                  >
-                    <Calendar className="w-4 h-4" />
-                    Add to Calendar
-                  </a>
-                </div>
-              </motion.div>
-            ) : (
-              <form onSubmit={handleSubmit} className="space-y-6">
-                {/* Progress indicator */}
-                <div className="flex items-center gap-2 mb-6">
-                  {[1, 2, 3].map((step) => (
-                    <div key={step} className="flex items-center gap-2">
-                      <div 
-                        className={`w-8 h-8 rounded-full flex items-center justify-center text-small font-medium transition-colors ${
-                          step === currentStep 
-                            ? 'bg-primary-foreground text-primary' 
-                            : step < currentStep 
-                              ? 'bg-green-500 text-primary-foreground' 
-                              : 'bg-primary-foreground/20 text-primary-foreground/60'
-                        }`}
-                      >
-                        {step < currentStep ? <CheckCircle2 className="w-4 h-4" /> : step}
-                      </div>
-                      {step < 3 && (
-                        <div className={`w-8 h-0.5 ${step < currentStep ? 'bg-green-500' : 'bg-primary-foreground/20'}`} />
-                      )}
-                    </div>
-                  ))}
-                  <span className="ml-3 text-small text-primary-foreground/60">
-                    {STEPS[currentStep as keyof typeof STEPS].title}
-                  </span>
-                </div>
-
-                <AnimatePresence mode="wait">
-                  {/* Step 1: Contact */}
-                  {currentStep === 1 && (
-                    <motion.div
-                      key="step1"
-                      variants={stepVariants}
-                      initial="enter"
-                      animate="center"
-                      exit="exit"
-                      transition={{ duration: prefersReducedMotion ? 0 : 0.2 }}
-                      className="space-y-4"
-                    >
-                      <div>
-                        <label className="flex items-center gap-2 text-small font-medium text-primary-foreground/80 mb-2">
-                          <User className="w-4 h-4" />
-                          Full Name *
-                        </label>
-                        <input
-                          type="text"
-                          value={formData.name}
-                          onChange={(e) => updateField('name', e.target.value)}
-                          placeholder="John Doe"
-                          required
-                          className={`w-full px-4 py-3 bg-primary-foreground/10 border border-primary-foreground/20 rounded-xl text-primary-foreground placeholder:text-primary-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary-foreground/30 ${
-                            errors.name ? 'border-red-400' : ''
-                          }`}
-                        />
-                        {errors.name && <p className="mt-1 text-caption text-red-300">{errors.name}</p>}
-                      </div>
-
-                      <div>
-                        <label className="flex items-center gap-2 text-small font-medium text-primary-foreground/80 mb-2">
-                          <Mail className="w-4 h-4" />
-                          Email Address *
-                        </label>
-                        <input
-                          type="email"
-                          value={formData.email}
-                          onChange={(e) => updateField('email', e.target.value)}
-                          placeholder="john@company.com"
-                          required
-                          className={`w-full px-4 py-3 bg-primary-foreground/10 border border-primary-foreground/20 rounded-xl text-primary-foreground placeholder:text-primary-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary-foreground/30 ${
-                            errors.email ? 'border-red-400' : ''
-                          }`}
-                        />
-                        {errors.email && <p className="mt-1 text-caption text-red-300">{errors.email}</p>}
-                      </div>
-
-                      <PhoneInput
-                        value={formData.phone}
-                        countryCode={formData.countryCode}
-                        onChange={(v) => updateField('phone', v)}
-                        onCountryChange={(v) => updateField('countryCode', v)}
-                        error={errors.phone}
-                      />
-                    </motion.div>
-                  )}
-
-                  {/* Step 2: Company */}
-                  {currentStep === 2 && (
-                    <motion.div
-                      key="step2"
-                      variants={stepVariants}
-                      initial="enter"
-                      animate="center"
-                      exit="exit"
-                      transition={{ duration: prefersReducedMotion ? 0 : 0.2 }}
-                      className="space-y-4"
-                    >
-                      <div>
-                        <label className="flex items-center gap-2 text-small font-medium text-primary-foreground/80 mb-2">
-                          <Building className="w-4 h-4" />
-                          Company Name
-                        </label>
-                        <input
-                          type="text"
-                          value={formData.company}
-                          onChange={(e) => updateField('company', e.target.value)}
-                          placeholder="Acme Inc."
-                          className="w-full px-4 py-3 bg-primary-foreground/10 border border-primary-foreground/20 rounded-xl text-primary-foreground placeholder:text-primary-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary-foreground/30"
-                        />
-                      </div>
-
-                      <div>
-                        <label className="text-small font-medium text-primary-foreground/80 mb-2 block">
-                          Your Role
-                        </label>
-                        <select
-                          value={formData.role}
-                          onChange={(e) => updateField('role', e.target.value)}
-                          className="w-full px-4 py-3 bg-primary-foreground/10 border border-primary-foreground/20 rounded-xl text-primary-foreground focus:outline-none focus:ring-2 focus:ring-primary-foreground/30"
-                        >
-                          <option value="" className="text-text-primary">Select your role</option>
-                          <option value="founder" className="text-text-primary">Founder / CEO</option>
-                          <option value="marketing" className="text-text-primary">Marketing Director</option>
-                          <option value="growth" className="text-text-primary">Head of Growth</option>
-                          <option value="sales" className="text-text-primary">Sales Leader</option>
-                          <option value="other" className="text-text-primary">Other</option>
-                        </select>
-                      </div>
-
-                      <div>
-                        <label className="text-small font-medium text-primary-foreground/80 mb-2 block">
-                          Monthly Leads (approx.)
-                        </label>
-                        <select
-                          value={formData.monthlyLeads}
-                          onChange={(e) => updateField('monthlyLeads', e.target.value)}
-                          className="w-full px-4 py-3 bg-primary-foreground/10 border border-primary-foreground/20 rounded-xl text-primary-foreground focus:outline-none focus:ring-2 focus:ring-primary-foreground/30"
-                        >
-                          <option value="" className="text-text-primary">Select range</option>
-                          <option value="<50" className="text-text-primary">Less than 50</option>
-                          <option value="50-100" className="text-text-primary">50 - 100</option>
-                          <option value="100-500" className="text-text-primary">100 - 500</option>
-                          <option value="500+" className="text-text-primary">500+</option>
-                        </select>
-                      </div>
-                    </motion.div>
-                  )}
-
-                  {/* Step 3: Schedule */}
-                  {currentStep === 3 && (
-                    <motion.div
-                      key="step3"
-                      variants={stepVariants}
-                      initial="enter"
-                      animate="center"
-                      exit="exit"
-                      transition={{ duration: prefersReducedMotion ? 0 : 0.2 }}
-                      className="space-y-4"
-                    >
-                      <div>
-                        <label className="flex items-center gap-2 text-small font-medium text-primary-foreground/80 mb-2">
-                          <Calendar className="w-4 h-4" />
-                          Preferred Demo Time
-                        </label>
-                        <select
-                          value={formData.preferredTime}
-                          onChange={(e) => updateField('preferredTime', e.target.value)}
-                          className="w-full px-4 py-3 bg-primary-foreground/10 border border-primary-foreground/20 rounded-xl text-primary-foreground focus:outline-none focus:ring-2 focus:ring-primary-foreground/30"
-                        >
-                          <option value="" className="text-text-primary">Select time slot</option>
-                          <option value="morning" className="text-text-primary">Morning (9 AM - 12 PM NPT)</option>
-                          <option value="afternoon" className="text-text-primary">Afternoon (12 PM - 5 PM NPT)</option>
-                          <option value="evening" className="text-text-primary">Evening (5 PM - 8 PM NPT)</option>
-                          <option value="flexible" className="text-text-primary">Flexible</option>
-                        </select>
-                      </div>
-
-                      <div>
-                        <label className="text-small font-medium text-primary-foreground/80 mb-2 block">
-                          Message (optional)
-                        </label>
-                        <textarea
-                          value={formData.message}
-                          onChange={(e) => updateField('message', e.target.value)}
-                          placeholder="Tell us about your goals..."
-                          rows={4}
-                          className="w-full px-4 py-3 bg-primary-foreground/10 border border-primary-foreground/20 rounded-xl text-primary-foreground placeholder:text-primary-foreground/50 focus:outline-none focus:ring-2 focus:ring-primary-foreground/30 resize-none"
-                        />
-                      </div>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                {/* Navigation buttons */}
-                <div className="flex gap-3 pt-4">
-                  {currentStep > 1 && (
-                    <button
-                      type="button"
-                      onClick={handleBack}
-                      className="flex items-center gap-2 px-4 py-3 text-primary-foreground/80 hover:text-primary-foreground transition-colors"
-                    >
-                      <ArrowLeft className="w-4 h-4" />
-                      Back
-                    </button>
-                  )}
+            <div className="bg-background rounded-3xl shadow-depth-4 p-6 md:p-8">
+              {isSubmitted ? (
+                <motion.div 
+                  initial={{ scale: 0.95, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  className="text-center py-8"
+                >
+                  <CheckCircle2 className="w-16 h-16 text-green-500 mx-auto mb-4" />
+                  <h3 className="font-serif text-2xl text-text-primary mb-2">Thank you!</h3>
+                  <p className="text-text-secondary mb-6">We'll contact you within 24 hours.</p>
                   
-                  {currentStep < 3 ? (
-                    <motion.button
-                      type="button"
-                      onClick={handleNext}
-                      className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary-foreground text-primary font-medium rounded-full"
-                      whileHover={prefersReducedMotion ? {} : { scale: 1.02 }}
-                      whileTap={prefersReducedMotion ? {} : { scale: 0.98 }}
+                  <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                    <a
+                      href="tel:+9779800000000"
+                      className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-charcoal text-primary-foreground rounded-full"
                     >
-                      Continue
-                      <ArrowUpRight className="w-5 h-5" />
-                    </motion.button>
-                  ) : (
-                    <motion.button
-                      type="submit"
-                      disabled={isLoading}
-                      className="flex-1 inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary-foreground text-primary font-medium rounded-full disabled:opacity-50"
-                      whileHover={prefersReducedMotion ? {} : { scale: 1.02 }}
-                      whileTap={prefersReducedMotion ? {} : { scale: 0.98 }}
+                      <Phone className="w-4 h-4" />
+                      Call Now
+                    </a>
+                    <button
+                      onClick={() => setIsSubmitted(false)}
+                      className="inline-flex items-center justify-center gap-2 px-5 py-3 border border-border rounded-full text-text-primary hover:bg-surface-2"
                     >
-                      {isLoading ? 'Sending...' : 'Send Request'}
-                      <ArrowUpRight className="w-5 h-5" />
-                    </motion.button>
-                  )}
-                </div>
+                      Submit Another
+                    </button>
+                  </div>
+                </motion.div>
+              ) : (
+                <form onSubmit={handleSubmit} className="space-y-5">
+                  {/* Name */}
+                  <div>
+                    <label className="flex items-center gap-2 text-small font-medium text-text-primary mb-2">
+                      <User className="w-4 h-4" />
+                      Full Name *
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.name}
+                      onChange={(e) => updateField('name', e.target.value)}
+                      placeholder="John Doe"
+                      required
+                      className={`w-full px-4 py-3 bg-surface-2 border border-border rounded-xl text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-charcoal/20 ${
+                        errors.name ? 'border-red-400' : ''
+                      }`}
+                    />
+                    {errors.name && <p className="mt-1 text-caption text-red-500">{errors.name}</p>}
+                  </div>
 
-                {/* Honeypot for anti-spam */}
-                <input type="text" name="website" style={{ display: 'none' }} tabIndex={-1} autoComplete="off" />
-              </form>
-            )}
+                  {/* Email */}
+                  <div>
+                    <label className="flex items-center gap-2 text-small font-medium text-text-primary mb-2">
+                      <Mail className="w-4 h-4" />
+                      Email Address *
+                    </label>
+                    <input
+                      type="email"
+                      value={formData.email}
+                      onChange={(e) => updateField('email', e.target.value)}
+                      placeholder="john@company.com"
+                      required
+                      className={`w-full px-4 py-3 bg-surface-2 border border-border rounded-xl text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-2 focus:ring-charcoal/20 ${
+                        errors.email ? 'border-red-400' : ''
+                      }`}
+                    />
+                    {errors.email && <p className="mt-1 text-caption text-red-500">{errors.email}</p>}
+                  </div>
+
+                  {/* Phone */}
+                  <PhoneInput
+                    value={formData.phone}
+                    countryCode={formData.countryCode}
+                    onChange={(v) => updateField('phone', v)}
+                    onCountryChange={(v) => updateField('countryCode', v)}
+                    error={errors.phone}
+                  />
+
+                  {/* Business Type */}
+                  <div>
+                    <label className="flex items-center gap-2 text-small font-medium text-text-primary mb-2">
+                      <Building className="w-4 h-4" />
+                      Business Type
+                    </label>
+                    <select
+                      value={formData.businessType}
+                      onChange={(e) => updateField('businessType', e.target.value)}
+                      className="w-full px-4 py-3 bg-surface-2 border border-border rounded-xl text-text-primary focus:outline-none focus:ring-2 focus:ring-charcoal/20"
+                    >
+                      <option value="">Select type</option>
+                      <option value="service">Service Business</option>
+                      <option value="ecommerce">E-commerce</option>
+                      <option value="saas">SaaS / Tech</option>
+                      <option value="agency">Agency</option>
+                      <option value="other">Other</option>
+                    </select>
+                  </div>
+
+                  {/* Submit */}
+                  <motion.button
+                    type="submit"
+                    disabled={isLoading}
+                    className="w-full inline-flex items-center justify-center gap-2 px-6 py-4 bg-charcoal text-primary-foreground font-semibold rounded-xl disabled:opacity-50"
+                    whileHover={prefersReducedMotion ? {} : { scale: 1.02 }}
+                    whileTap={prefersReducedMotion ? {} : { scale: 0.98 }}
+                  >
+                    {isLoading ? 'Sending...' : 'Get Started'}
+                    <ArrowUpRight className="w-5 h-5" />
+                  </motion.button>
+                </form>
+              )}
+            </div>
           </motion.div>
         </div>
       </Container>
