@@ -6,7 +6,7 @@
 import { motion, useReducedMotion } from 'framer-motion';
 import { Container, Section } from '@/components/layout/SiteShell';
 
-// Human proof cards
+// Human proof cards with SEO-friendly alt texts
 const proofItems = [
   {
     id: 'proof-1',
@@ -14,6 +14,7 @@ const proofItems = [
     name: 'Sarah M.',
     role: 'Founder, TechFlow',
     quote: 'Finally, ads that actually work.',
+    alt: 'Sarah M. - TechFlow founder, Pure Craft digital marketing client testimonial',
   },
   {
     id: 'proof-2',
@@ -21,6 +22,7 @@ const proofItems = [
     name: 'James K.',
     role: 'CEO, Wellness Co',
     quote: 'Our calendar is full every week.',
+    alt: 'James K. - Wellness Co CEO, Pure Craft AI appointment setting success story',
   },
   {
     id: 'proof-3',
@@ -28,6 +30,7 @@ const proofItems = [
     name: 'Maria L.',
     role: 'Director, GrowthHQ',
     quote: 'Best investment we made this year.',
+    alt: 'Maria L. - GrowthHQ Director, Pure Craft Nepal marketing agency client',
   },
   {
     id: 'proof-4',
@@ -35,6 +38,7 @@ const proofItems = [
     name: 'Our Team',
     role: 'Strategy Session',
     quote: 'Real people. Real results.',
+    alt: 'Pure Craft digital marketing team in Nepal during strategy planning session',
   },
 ];
 
@@ -61,7 +65,7 @@ const ProofCard = ({
       <div className="aspect-square overflow-hidden">
         <img
           src={item.image}
-          alt={item.name}
+          alt={item.alt}
           className="w-full h-full object-cover"
           loading="lazy"
         />
@@ -85,9 +89,28 @@ export function SocialProofHuman() {
   const prefersReducedMotion = useReducedMotion() ?? false;
 
   return (
-    <Section id="testimonials" className="bg-surface-2/30 overflow-hidden">
-      <Container size="wide">
-        {/* Minimal header */}
+    <Section id="testimonials" className="relative bg-surface-2/30 overflow-hidden">
+      {/* Background photo layer with blur */}
+      <div className="absolute inset-0 pointer-events-none">
+        <img
+          src="/assets/photos/team-meeting.jpg"
+          alt="Pure Craft digital marketing team strategy session"
+          className="absolute inset-0 w-full h-full object-cover blur-sm"
+          style={{ opacity: 0.04 }}
+          loading="lazy"
+        />
+        <div className="absolute inset-0 bg-surface-2/95" />
+        {/* Dot pattern */}
+        <div 
+          className="absolute inset-0 opacity-25"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='20' height='20' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='1' cy='1' r='1' fill='%23000' fill-opacity='0.04'/%3E%3C/svg%3E")`,
+          }}
+        />
+      </div>
+      
+      <Container size="wide" className="relative z-10">
+        {/* Header with SEO */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -95,9 +118,10 @@ export function SocialProofHuman() {
           transition={{ duration: prefersReducedMotion ? 0 : 0.5 }}
           className="text-center mb-10"
         >
-          <h2 className="font-serif text-h2 text-text-primary">
-            People we work with.
+          <h2 className="font-serif text-h2 text-text-primary mb-2">
+            Why Businesses Choose Pure Craft
           </h2>
+          <p className="text-body text-text-muted">Built for businesses in Nepal</p>
         </motion.div>
 
         {/* Instagram-style grid */}

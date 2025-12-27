@@ -9,7 +9,7 @@ import { Play, ArrowUpRight } from 'lucide-react';
 import { Container, Section } from '@/components/layout/SiteShell';
 import { trackEvent } from '@/lib/analytics';
 
-// Visual proof cards with minimal text
+// Visual proof cards with minimal text and SEO-friendly alt texts
 const proofCards = [
   {
     id: 'proof-1',
@@ -18,6 +18,7 @@ const proofCards = [
     visual: '/assets/photos/proof-dashboard.jpg',
     video: '/assets/videos/proof-dashboard.mp4',
     caption: 'Ad performance dashboard',
+    alt: 'Digital marketing dashboard showing 8.2x ROAS for Nepal business campaign',
     color: 'bg-green-100',
   },
   {
@@ -27,6 +28,7 @@ const proofCards = [
     visual: '/assets/photos/proof-calls.jpg',
     video: null,
     caption: 'Sales calls booked',
+    alt: 'Pure Craft marketing agency sales call booking system',
     color: 'bg-blue-100',
   },
   {
@@ -36,6 +38,7 @@ const proofCards = [
     visual: '/assets/photos/proof-leads.jpg',
     video: '/assets/videos/proof-leads.mp4',
     caption: 'CRM inbox filling',
+    alt: 'Lead generation CRM showing monthly leads for Nepal digital marketing client',
     color: 'bg-purple-100',
   },
   {
@@ -45,6 +48,7 @@ const proofCards = [
     visual: '/assets/photos/proof-calendar.jpg',
     video: null,
     caption: 'Calendar automation',
+    alt: 'AI appointment setting calendar with automated bookings',
     color: 'bg-orange-100',
   },
   {
@@ -54,6 +58,7 @@ const proofCards = [
     visual: '/assets/photos/proof-revenue.jpg',
     video: null,
     caption: 'Client success',
+    alt: 'Revenue growth chart from Pure Craft digital marketing campaigns',
     color: 'bg-emerald-100',
   },
 ];
@@ -100,7 +105,7 @@ const ProofCard = ({
       <div className="absolute inset-0">
         <img
           src={card.visual}
-          alt={card.caption}
+          alt={card.alt}
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           loading="lazy"
         />
@@ -168,9 +173,19 @@ export function VisualProof() {
   const prefersReducedMotion = useReducedMotion() ?? false;
 
   return (
-    <Section id="results" className="bg-background overflow-hidden">
-      <Container size="wide">
-        {/* Minimal header */}
+    <Section id="results" className="relative bg-background overflow-hidden">
+      {/* Background pattern */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div 
+          className="absolute inset-0 opacity-30"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M 40 0 L 0 0 0 40' fill='none' stroke='%23000' stroke-opacity='0.03' stroke-width='1'/%3E%3C/svg%3E")`,
+          }}
+        />
+      </div>
+      
+      <Container size="wide" className="relative z-10">
+        {/* Minimal header with SEO */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -178,9 +193,10 @@ export function VisualProof() {
           transition={{ duration: prefersReducedMotion ? 0 : 0.5 }}
           className="text-center mb-10"
         >
-          <h2 className="font-serif text-h2 text-text-primary">
-            Results, visualized.
+          <h2 className="font-serif text-h2 text-text-primary mb-2">
+            Results-Driven Digital Marketing in Nepal
           </h2>
+          <p className="text-body text-text-muted">Performance you can see</p>
         </motion.div>
 
         {/* Horizontal scroll on mobile, grid on desktop */}

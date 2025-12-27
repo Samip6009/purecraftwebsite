@@ -174,8 +174,19 @@ export function GrowthDiagnostic() {
   };
 
   return (
-    <Section id="diagnostic" className="bg-background">
-      <Container size="narrow">
+    <Section id="diagnostic" className="relative bg-background overflow-hidden">
+      {/* Background: Funnel flow lines */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <svg className="absolute w-full h-full opacity-[0.04]" viewBox="0 0 100 100" preserveAspectRatio="none">
+          <path d="M 10 20 Q 50 30 90 25" fill="none" stroke="currentColor" strokeWidth="0.3" strokeDasharray="2 2" />
+          <path d="M 5 50 Q 40 55 95 45" fill="none" stroke="currentColor" strokeWidth="0.2" strokeDasharray="3 3" />
+          <path d="M 15 80 Q 60 70 85 75" fill="none" stroke="currentColor" strokeWidth="0.25" strokeDasharray="1.5 1.5" />
+        </svg>
+        {/* Subtle gradient */}
+        <div className="absolute inset-0 bg-gradient-to-br from-surface-2/30 via-transparent to-surface-3/20" />
+      </div>
+      
+      <Container size="narrow" className="relative z-10">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
