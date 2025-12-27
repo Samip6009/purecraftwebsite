@@ -69,11 +69,12 @@ export function Header() {
           >
             <img 
               src={pureCraftLogo} 
-              alt="Pure Craft Logo" 
+              alt="Pure Craft – Digital Marketing Agency Nepal" 
               className="h-10 md:h-12 w-auto"
               width={48}
               height={48}
               loading="eager"
+              fetchPriority="high"
             />
             <span className="hidden sm:block font-serif text-lg md:text-xl font-medium text-text-primary">
               Pure Craft
