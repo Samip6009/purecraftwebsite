@@ -1,6 +1,7 @@
 /**
- * Analytics Stubs - Placeholder for GA4, Meta Pixel, etc.
+ * Analytics Stubs - Pure Craft — Visual ROI & Media upgrade
  * Wire these up with actual tracking IDs in production
+ * Privacy: Hash PII before sending to analytics
  */
 
 // Event names for consistent tracking
@@ -18,7 +19,21 @@ export const ANALYTICS_EVENTS = {
   SCROLL_DEPTH: 'scroll_depth',
   TIME_ON_PAGE: 'time_on_page',
   CASE_STUDY_VIEW: 'case_study_view',
+  
+  // ROI Calculator - NEW
   ROI_CALCULATOR_USE: 'roi_calculator_use',
+  ROI_PRESET_SELECTED: 'roi_preset_selected',
+  ROI_EXPORTED: 'roi_exported',
+  ROI_COPIED: 'roi_copied',
+  ROI_TIME_HORIZON: 'roi_time_horizon',
+  
+  // Contact - NEW
+  CONTACT_PREFILL: 'contact_prefill',
+  CONTACT_SUBMITTED: 'contact_submitted',
+  
+  // Media - NEW
+  MEDIA_PLAYED: 'media_played',
+  MEDIA_PAUSED: 'media_paused',
   
   // Social
   SOCIAL_CLICK: 'social_click',
