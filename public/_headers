@@ -1,0 +1,50 @@
+# Netlify headers for aggressive caching and performance
+# https://docs.netlify.com/routing/headers/
+
+# All pages - security and caching
+/*
+  X-Frame-Options: DENY
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+
+# Static assets - immutable caching
+/assets/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# JS/CSS chunks - long cache
+/*.js
+  Cache-Control: public, max-age=31536000, immutable
+  Content-Encoding: gzip
+
+/*.css
+  Cache-Control: public, max-age=31536000, immutable
+  Content-Encoding: gzip
+
+# Images - long cache
+/assets/photos/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Fonts - immutable
+/*.woff2
+  Cache-Control: public, max-age=31536000, immutable
+  Access-Control-Allow-Origin: *
+
+/*.woff
+  Cache-Control: public, max-age=31536000, immutable
+  Access-Control-Allow-Origin: *
+
+# HTML - short cache for updates
+/*.html
+  Cache-Control: public, max-age=0, must-revalidate
+
+/
+  Cache-Control: public, max-age=0, must-revalidate
+
+# Service worker
+/sw.js
+  Cache-Control: public, max-age=0, must-revalidate
+
+# Manifest
+/manifest.json
+  Cache-Control: public, max-age=86400

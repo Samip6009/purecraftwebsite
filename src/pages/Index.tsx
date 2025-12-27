@@ -1,19 +1,47 @@
 /**
  * Pure Craft - Premium SMMA Agency
- * samipkc.com.np - Visual-first, 80/20 design
+ * Performance optimized with lazy loading and deferred hydration
  */
+import { lazy, Suspense, useEffect, memo } from 'react';
 import { SiteShell } from '@/components/layout/SiteShell';
 import { Header } from '@/components/layout/Header';
 import { HeroAgency } from '@/components/sections/HeroAgency';
-import { VisualProof } from '@/components/sections/VisualProof';
-import { ServicesVisual } from '@/components/sections/ServicesVisual';
-import { GrowthDiagnostic } from '@/components/sections/GrowthDiagnostic';
-import { ContactFormPremium } from '@/components/sections/ContactFormPremium';
 import { FooterPremium } from '@/components/layout/FooterPremium';
-import { MobileStickyCTA } from '@/components/ui/MobileStickyCTA';
 import { SEOHead } from '@/lib/seo';
+import { initAnalytics, initScrollTracking } from '@/lib/analytics';
+import { 
+  ProofSkeleton, 
+  ServicesSkeleton, 
+  DiagnosticSkeleton, 
+  ContactSkeleton 
+} from '@/components/ui/SectionSkeleton';
+
+// Lazy load below-the-fold sections
+const VisualProof = lazy(() => import('@/components/sections/VisualProof'));
+const ServicesVisual = lazy(() => import('@/components/sections/ServicesVisual'));
+const GrowthDiagnostic = lazy(() => import('@/components/sections/GrowthDiagnostic'));
+const ContactFormPremium = lazy(() => import('@/components/sections/ContactFormPremium'));
+const MobileStickyCTA = lazy(() => import('@/components/ui/MobileStickyCTA'));
+
+// Memoize sections for performance
+const MemoVisualProof = memo(VisualProof);
+const MemoServicesVisual = memo(ServicesVisual);
+const MemoGrowthDiagnostic = memo(GrowthDiagnostic);
+const MemoContactFormPremium = memo(ContactFormPremium);
+const MemoMobileStickyCTA = memo(MobileStickyCTA);
 
 const Index = () => {
+  // Deferred analytics initialization
+  useEffect(() => {
+    // Initialize analytics after first interaction or idle
+    initAnalytics();
+    const scrollCleanup = initScrollTracking();
+    
+    return () => {
+      if (scrollCleanup) scrollCleanup();
+    };
+  }, []);
+
   return (
     <SiteShell>
       <SEOHead 
@@ -23,26 +51,33 @@ const Index = () => {
       <Header />
       
       <main id="main-content">
-        {/* Hero: Full visual takeover */}
+        {/* Hero: Critical - loads immediately */}
         <HeroAgency />
         
-        {/* Results: Visual proof cards */}
-        <VisualProof />
+        {/* Lazy loaded sections with skeletons */}
+        <Suspense fallback={<ProofSkeleton />}>
+          <MemoVisualProof />
+        </Suspense>
         
-        {/* Services: Visual tiles */}
-        <ServicesVisual />
+        <Suspense fallback={<ServicesSkeleton />}>
+          <MemoServicesVisual />
+        </Suspense>
         
-        {/* Diagnostic: Visual funnel */}
-        <GrowthDiagnostic />
+        <Suspense fallback={<DiagnosticSkeleton />}>
+          <MemoGrowthDiagnostic />
+        </Suspense>
         
-        {/* Contact: Visual card form */}
-        <ContactFormPremium />
+        <Suspense fallback={<ContactSkeleton />}>
+          <MemoContactFormPremium />
+        </Suspense>
       </main>
       
       <FooterPremium />
       
-      {/* Mobile sticky CTA */}
-      <MobileStickyCTA />
+      {/* Mobile sticky CTA - lazy loaded */}
+      <Suspense fallback={null}>
+        <MemoMobileStickyCTA />
+      </Suspense>
     </SiteShell>
   );
 };
