@@ -1,40 +1,37 @@
+/**
+ * Pure Craft - Digital Marketing Agency
+ * samipkc.com.np
+ */
 import { SiteShell } from '@/components/layout/SiteShell';
-import { Navigation } from '@/components/layout/Navigation';
+import { Header } from '@/components/layout/Header';
 import { HeroPremium } from '@/components/sections/HeroPremium';
 import { BentoGridSection } from '@/components/sections/BentoGrid';
+import { BentoPortfolio } from '@/components/sections/BentoPortfolio';
 import { TwoColumnSection } from '@/components/sections/TwoColumn';
-import { ContactSection } from '@/components/sections/Contact';
-import { Footer } from '@/components/layout/Footer';
+import { RoiCalculator } from '@/components/sections/RoiCalculator';
+import { ContactFormPremium } from '@/components/sections/ContactFormPremium';
+import { FooterPremium } from '@/components/layout/FooterPremium';
+import { SEOHead } from '@/lib/seo';
 
-/**
- * Pure Craft - AI Appointment Setting
- * samipkc.com.np
- * 
- * Premium, minimalist white theme with:
- * - Editorial typography (Playfair Display + Inter)
- * - Monochrome depth through layered shadows
- * - Glassmorphism for subtle elevation
- * - Framer Motion animations (respects reduced-motion)
- * - Bento grid showcase
- */
 const Index = () => {
   return (
     <SiteShell>
-      <Navigation />
+      <SEOHead 
+        title="Digital Marketing & AI Automation"
+        description="Pure Craft is a premium digital marketing agency specializing in AI-powered appointment setting and lead generation for enterprises."
+      />
+      <Header />
       
       <main id="main-content">
-        {/* Premium Hero with refined motion */}
-        <HeroPremium 
-          headlineVariant={0}
-          subheadVariant={0}
-        />
-        
+        <HeroPremium headlineVariant={0} subheadVariant={0} />
         <BentoGridSection />
+        <BentoPortfolio />
         <TwoColumnSection />
-        <ContactSection />
+        <RoiCalculator />
+        <ContactFormPremium />
       </main>
       
-      <Footer />
+      <FooterPremium />
     </SiteShell>
   );
 };
