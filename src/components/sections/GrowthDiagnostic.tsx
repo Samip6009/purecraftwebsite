@@ -1,135 +1,110 @@
 /**
- * GrowthDiagnostic.tsx - Visual funnel diagnostic (replaces ROI calculator)
- * Pure Craft SMMA - Shows where money leaks, not fake projections
- * Visual funnel animation with before/after
+ * GrowthDiagnostic.tsx - Visual funnel diagnostic
+ * Pure Craft SMMA - Animated funnel visualization
  */
 import { useState, useMemo } from 'react';
 import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
-import { ArrowUpRight, ArrowDown, Users, Phone, DollarSign, AlertTriangle, CheckCircle } from 'lucide-react';
+import { ArrowUpRight, ArrowDown, Users, Phone, DollarSign, AlertTriangle, CheckCircle, Sparkles } from 'lucide-react';
 import { Container, Section } from '@/components/layout/SiteShell';
 import { trackCTAClick, trackEvent } from '@/lib/analytics';
 
-// Business types with baseline conversion rates
 const businessTypes = [
-  { id: 'service', name: 'Service Business', baseConversion: 8, baseClose: 20 },
-  { id: 'saas', name: 'SaaS / Tech', baseConversion: 5, baseClose: 15 },
-  { id: 'ecommerce', name: 'E-commerce', baseConversion: 2, baseClose: 25 },
+  { id: 'service', name: 'Service', baseConversion: 8, baseClose: 20 },
+  { id: 'saas', name: 'SaaS', baseConversion: 5, baseClose: 15 },
+  { id: 'ecommerce', name: 'E-comm', baseConversion: 2, baseClose: 25 },
   { id: 'agency', name: 'Agency', baseConversion: 10, baseClose: 30 },
 ];
 
-// Lead volume options
 const leadVolumes = [
-  { id: 'low', label: '< 50/mo', value: 30 },
-  { id: 'medium', label: '50-200/mo', value: 100 },
-  { id: 'high', label: '200+/mo', value: 250 },
+  { id: 'low', label: '<50/mo', value: 30 },
+  { id: 'medium', label: '50-200', value: 100 },
+  { id: 'high', label: '200+', value: 250 },
 ];
 
-// Close rate options
 const closeRates = [
-  { id: 'low', label: '< 10%', value: 8 },
+  { id: 'low', label: '<10%', value: 8 },
   { id: 'medium', label: '10-25%', value: 18 },
   { id: 'high', label: '25%+', value: 30 },
 ];
 
-// Funnel stage component
-const FunnelStage = ({
-  icon: Icon,
+// Visual funnel stage
+const FunnelBar = ({
   label,
+  icon: Icon,
   valueBefore,
   valueAfter,
-  isLeak,
   showAfter,
+  isLeak,
   delay,
   reduced,
 }: {
-  icon: React.ElementType;
   label: string;
+  icon: React.ElementType;
   valueBefore: number;
   valueAfter: number;
-  isLeak: boolean;
   showAfter: boolean;
+  isLeak: boolean;
   delay: number;
   reduced: boolean;
-}) => {
-  return (
-    <motion.div
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{ duration: reduced ? 0 : 0.4, delay }}
-      className="relative"
-    >
-      <div className="flex items-center gap-4">
-        {/* Icon */}
-        <div className={`w-12 h-12 rounded-xl flex items-center justify-center ${
-          isLeak ? 'bg-red-100' : 'bg-surface-2'
-        }`}>
-          <Icon className={`w-6 h-6 ${isLeak ? 'text-red-500' : 'text-text-secondary'}`} />
+}) => (
+  <motion.div
+    initial={{ opacity: 0, x: -20 }}
+    animate={{ opacity: 1, x: 0 }}
+    transition={{ duration: reduced ? 0 : 0.4, delay }}
+    className="mb-4"
+  >
+    <div className="flex items-center gap-3 mb-2">
+      <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${isLeak ? 'bg-red-100' : 'bg-surface-3'}`}>
+        <Icon className={`w-5 h-5 ${isLeak ? 'text-red-500' : 'text-text-secondary'}`} />
+      </div>
+      <span className="text-small font-medium text-text-primary">{label}</span>
+      {isLeak && (
+        <span className="flex items-center gap-1 text-caption text-red-500">
+          <AlertTriangle className="w-3 h-3" /> Leak
+        </span>
+      )}
+    </div>
+    
+    <div className="flex gap-3">
+      {/* Before */}
+      <div className="flex-1">
+        <div className="h-4 bg-surface-3 rounded-full overflow-hidden">
+          <motion.div
+            className={`h-full rounded-full ${isLeak ? 'bg-red-400' : 'bg-charcoal-muted'}`}
+            initial={{ width: 0 }}
+            animate={{ width: `${Math.min(valueBefore, 100)}%` }}
+            transition={{ duration: reduced ? 0 : 0.6, delay: delay + 0.2 }}
+          />
         </div>
+        <span className="text-caption text-text-muted mt-1 block">Now: {valueBefore}%</span>
+      </div>
 
-        {/* Labels and values */}
-        <div className="flex-1">
-          <div className="flex items-center gap-2 mb-1">
-            <span className="text-small font-medium text-text-primary">{label}</span>
-            {isLeak && (
-              <span className="flex items-center gap-1 text-[10px] text-red-500 font-medium">
-                <AlertTriangle className="w-3 h-3" />
-                Leak
-              </span>
-            )}
-          </div>
-          
-          {/* Before / After bars */}
-          <div className="flex items-center gap-3">
-            {/* Before */}
-            <div className="flex-1">
-              <div className="h-3 bg-surface-3 rounded-full overflow-hidden">
-                <motion.div
-                  className={`h-full rounded-full ${isLeak ? 'bg-red-300' : 'bg-charcoal-muted'}`}
-                  initial={{ width: 0 }}
-                  animate={{ width: `${Math.min(valueBefore, 100)}%` }}
-                  transition={{ duration: reduced ? 0 : 0.6, delay: delay + 0.2 }}
-                />
-              </div>
-              <span className="text-caption text-text-muted mt-1 block">
-                Now: {valueBefore}%
-              </span>
+      {/* After */}
+      <AnimatePresence>
+        {showAfter && (
+          <motion.div
+            initial={{ opacity: 0, width: 0 }}
+            animate={{ opacity: 1, width: '100%' }}
+            exit={{ opacity: 0, width: 0 }}
+            className="flex-1"
+          >
+            <div className="h-4 bg-surface-3 rounded-full overflow-hidden">
+              <motion.div
+                className="h-full rounded-full bg-green-500"
+                initial={{ width: 0 }}
+                animate={{ width: `${Math.min(valueAfter, 100)}%` }}
+                transition={{ duration: reduced ? 0 : 0.6 }}
+              />
             </div>
-
-            {/* After (only if toggled) */}
-            <AnimatePresence>
-              {showAfter && (
-                <motion.div
-                  initial={{ opacity: 0, width: 0 }}
-                  animate={{ opacity: 1, width: '100%' }}
-                  exit={{ opacity: 0, width: 0 }}
-                  className="flex-1"
-                >
-                  <div className="h-3 bg-surface-3 rounded-full overflow-hidden">
-                    <motion.div
-                      className="h-full rounded-full bg-green-500"
-                      initial={{ width: 0 }}
-                      animate={{ width: `${Math.min(valueAfter, 100)}%` }}
-                      transition={{ duration: reduced ? 0 : 0.6 }}
-                    />
-                  </div>
-                  <span className="text-caption text-green-600 mt-1 block flex items-center gap-1">
-                    <CheckCircle className="w-3 h-3" />
-                    Optimized: {valueAfter}%
-                  </span>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </div>
-        </div>
-      </div>
-
-      {/* Arrow down */}
-      <div className="ml-6 my-2 flex justify-start">
-        <ArrowDown className="w-4 h-4 text-text-muted" />
-      </div>
-    </motion.div>
-  );
-};
+            <span className="text-caption text-green-600 mt-1 flex items-center gap-1">
+              <CheckCircle className="w-3 h-3" /> {valueAfter}%
+            </span>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  </motion.div>
+);
 
 export function GrowthDiagnostic() {
   const prefersReducedMotion = useReducedMotion() ?? false;
@@ -139,7 +114,6 @@ export function GrowthDiagnostic() {
   const [closeRate, setCloseRate] = useState(closeRates[1]);
   const [showOptimized, setShowOptimized] = useState(false);
 
-  // Calculate funnel stages
   const funnel = useMemo(() => {
     const leads = leadVolume.value;
     const leadToCall = businessType.baseConversion;
@@ -148,7 +122,6 @@ export function GrowthDiagnostic() {
     const calls = Math.round(leads * (leadToCall / 100));
     const sales = Math.round(calls * (callToSale / 100));
 
-    // Optimized rates (realistic improvements)
     const optimizedLeadToCall = Math.min(leadToCall * 1.5, 25);
     const optimizedCallToSale = Math.min(callToSale * 1.3, 40);
     
@@ -174,16 +147,16 @@ export function GrowthDiagnostic() {
   };
 
   return (
-    <Section id="diagnostic" className="relative bg-background overflow-hidden">
-      {/* Background: Funnel flow lines */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <svg className="absolute w-full h-full opacity-[0.04]" viewBox="0 0 100 100" preserveAspectRatio="none">
-          <path d="M 10 20 Q 50 30 90 25" fill="none" stroke="currentColor" strokeWidth="0.3" strokeDasharray="2 2" />
-          <path d="M 5 50 Q 40 55 95 45" fill="none" stroke="currentColor" strokeWidth="0.2" strokeDasharray="3 3" />
-          <path d="M 15 80 Q 60 70 85 75" fill="none" stroke="currentColor" strokeWidth="0.25" strokeDasharray="1.5 1.5" />
-        </svg>
-        {/* Subtle gradient */}
-        <div className="absolute inset-0 bg-gradient-to-br from-surface-2/30 via-transparent to-surface-3/20" />
+    <Section id="diagnostic" className="relative overflow-hidden">
+      {/* Background */}
+      <div className="absolute inset-0 bg-gradient-to-br from-surface-2 via-background to-surface-3">
+        {/* Grid */}
+        <div 
+          className="absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M 40 0 L 0 0 0 40' fill='none' stroke='%23000' stroke-width='0.5'/%3E%3C/svg%3E")`,
+          }}
+        />
       </div>
       
       <Container size="narrow" className="relative z-10">
@@ -195,36 +168,29 @@ export function GrowthDiagnostic() {
           transition={{ duration: prefersReducedMotion ? 0 : 0.5 }}
           className="text-center mb-10"
         >
-          <h2 className="font-serif text-h2 text-text-primary mb-2">
-            Where's the leak?
+          <h2 className="font-serif text-3xl md:text-4xl lg:text-5xl text-text-primary mb-3">
+            Find Your Leaks
           </h2>
-          <p className="text-body text-text-secondary">
-            See your funnel. Spot the fix.
-          </p>
+          <p className="text-lg text-text-secondary">See where you're losing revenue</p>
         </motion.div>
 
         <div className="grid lg:grid-cols-2 gap-8">
-          {/* Left: Inputs */}
+          {/* Left: Controls */}
           <motion.div
             initial={{ opacity: 0, x: -20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            className="bg-card rounded-2xl border border-border p-6 shadow-depth-1"
+            className="bg-card rounded-2xl border border-border p-6 shadow-depth-2"
           >
             {/* Business type */}
             <div className="mb-6">
-              <label className="text-small font-medium text-text-primary mb-3 block">
-                Business type
-              </label>
-              <div className="grid grid-cols-2 gap-2">
+              <label className="text-small font-medium text-text-primary mb-3 block">Business</label>
+              <div className="grid grid-cols-4 gap-2">
                 {businessTypes.map((type) => (
                   <button
                     key={type.id}
-                    onClick={() => {
-                      setBusinessType(type);
-                      trackEvent('diagnostic_input', { field: 'business_type', value: type.id });
-                    }}
-                    className={`px-4 py-3 rounded-xl text-small font-medium transition-all ${
+                    onClick={() => setBusinessType(type)}
+                    className={`px-3 py-2 rounded-xl text-caption font-medium transition-all ${
                       businessType.id === type.id
                         ? 'bg-charcoal text-primary-foreground'
                         : 'bg-surface-2 text-text-secondary hover:bg-surface-3'
@@ -238,15 +204,13 @@ export function GrowthDiagnostic() {
 
             {/* Lead volume */}
             <div className="mb-6">
-              <label className="text-small font-medium text-text-primary mb-3 block">
-                Monthly leads
-              </label>
+              <label className="text-small font-medium text-text-primary mb-3 block">Leads</label>
               <div className="flex gap-2">
                 {leadVolumes.map((vol) => (
                   <button
                     key={vol.id}
                     onClick={() => setLeadVolume(vol)}
-                    className={`flex-1 px-4 py-3 rounded-xl text-small font-medium transition-all ${
+                    className={`flex-1 px-3 py-2 rounded-xl text-caption font-medium transition-all ${
                       leadVolume.id === vol.id
                         ? 'bg-charcoal text-primary-foreground'
                         : 'bg-surface-2 text-text-secondary hover:bg-surface-3'
@@ -260,15 +224,13 @@ export function GrowthDiagnostic() {
 
             {/* Close rate */}
             <div className="mb-6">
-              <label className="text-small font-medium text-text-primary mb-3 block">
-                Close rate
-              </label>
+              <label className="text-small font-medium text-text-primary mb-3 block">Close Rate</label>
               <div className="flex gap-2">
                 {closeRates.map((rate) => (
                   <button
                     key={rate.id}
                     onClick={() => setCloseRate(rate)}
-                    className={`flex-1 px-4 py-3 rounded-xl text-small font-medium transition-all ${
+                    className={`flex-1 px-3 py-2 rounded-xl text-caption font-medium transition-all ${
                       closeRate.id === rate.id
                         ? 'bg-charcoal text-primary-foreground'
                         : 'bg-surface-2 text-text-secondary hover:bg-surface-3'
@@ -280,76 +242,72 @@ export function GrowthDiagnostic() {
               </div>
             </div>
 
-            {/* Toggle optimized view */}
+            {/* Toggle */}
             <button
               onClick={() => setShowOptimized(!showOptimized)}
-              className={`w-full py-3 rounded-xl font-medium transition-all ${
+              className={`w-full py-3 rounded-xl font-medium transition-all flex items-center justify-center gap-2 ${
                 showOptimized
                   ? 'bg-green-100 text-green-700 border border-green-200'
                   : 'bg-surface-2 text-text-secondary border border-border'
               }`}
             >
-              {showOptimized ? '✓ Showing optimized' : 'Show after Pure Craft'}
+              <Sparkles className="w-4 h-4" />
+              {showOptimized ? 'Showing Optimized' : 'Show After Pure Craft'}
             </button>
           </motion.div>
 
-          {/* Right: Visual funnel */}
+          {/* Right: Funnel */}
           <motion.div
             initial={{ opacity: 0, x: 20 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            className="bg-card rounded-2xl border border-border p-6 shadow-depth-1"
+            className="bg-card rounded-2xl border border-border p-6 shadow-depth-2"
           >
-            <div className="mb-4 flex items-center justify-between">
-              <span className="text-small font-medium text-text-primary">Your funnel</span>
+            <div className="flex items-center justify-between mb-6">
+              <span className="text-small font-medium text-text-primary">Your Funnel</span>
               <span className="text-caption text-text-muted">
-                {funnel.leads} leads → {showOptimized ? funnel.optimizedSales : funnel.sales} sales
+                {funnel.leads} → {showOptimized ? funnel.optimizedSales : funnel.sales} sales
               </span>
             </div>
 
-            {/* Funnel visualization */}
-            <div className="space-y-2">
-              <FunnelStage
-                icon={Users}
-                label="Leads captured"
-                valueBefore={100}
-                valueAfter={100}
-                isLeak={false}
-                showAfter={showOptimized}
-                delay={0}
-                reduced={prefersReducedMotion}
-              />
-              
-              <FunnelStage
-                icon={Phone}
-                label="Leads → Calls"
-                valueBefore={funnel.leadToCall}
-                valueAfter={funnel.optimizedLeadToCall}
-                isLeak={funnel.leadToCall < 10}
-                showAfter={showOptimized}
-                delay={0.15}
-                reduced={prefersReducedMotion}
-              />
-              
-              <FunnelStage
-                icon={DollarSign}
-                label="Calls → Sales"
-                valueBefore={funnel.callToSale}
-                valueAfter={funnel.optimizedCallToSale}
-                isLeak={funnel.callToSale < 20}
-                showAfter={showOptimized}
-                delay={0.3}
-                reduced={prefersReducedMotion}
-              />
-            </div>
+            <FunnelBar
+              icon={Users}
+              label="Lead Capture"
+              valueBefore={100}
+              valueAfter={100}
+              showAfter={showOptimized}
+              isLeak={false}
+              delay={0}
+              reduced={prefersReducedMotion}
+            />
+            
+            <FunnelBar
+              icon={Phone}
+              label="Lead → Call"
+              valueBefore={funnel.leadToCall}
+              valueAfter={funnel.optimizedLeadToCall}
+              showAfter={showOptimized}
+              isLeak={funnel.leadToCall < 10}
+              delay={0.15}
+              reduced={prefersReducedMotion}
+            />
+            
+            <FunnelBar
+              icon={DollarSign}
+              label="Call → Sale"
+              valueBefore={funnel.callToSale}
+              valueAfter={funnel.optimizedCallToSale}
+              showAfter={showOptimized}
+              isLeak={funnel.callToSale < 20}
+              delay={0.3}
+              reduced={prefersReducedMotion}
+            />
 
-            {/* Result summary */}
-            <div className={`mt-6 p-4 rounded-xl ${
-              showOptimized ? 'bg-green-50 border border-green-100' : 'bg-surface-2'
-            }`}>
+            {/* Result */}
+            <div className={`mt-6 p-4 rounded-xl ${showOptimized ? 'bg-green-50 border border-green-100' : 'bg-surface-2'}`}>
               <div className="flex items-center justify-between">
-                <span className="text-small text-text-secondary">Sales/month</span>
-                <div className="flex items-center gap-2">
+                <span className="text-small text-text-secondary">Monthly Sales</span>
+                <div className="flex items-center gap-3">
                   <span className={`font-serif text-2xl ${showOptimized ? 'text-text-muted line-through' : 'text-text-primary'}`}>
                     {funnel.sales}
                   </span>
@@ -377,11 +335,11 @@ export function GrowthDiagnostic() {
         >
           <motion.button
             onClick={handleCTA}
-            className="inline-flex items-center gap-2 px-8 py-4 bg-primary text-primary-foreground font-medium rounded-full shadow-depth-3"
+            className="inline-flex items-center gap-2 px-8 py-4 bg-charcoal text-primary-foreground font-semibold rounded-full shadow-depth-3"
             whileHover={prefersReducedMotion ? {} : { scale: 1.03 }}
             whileTap={prefersReducedMotion ? {} : { scale: 0.97 }}
           >
-            Get a real projection on call
+            Get Your Real Projection
             <ArrowUpRight className="w-5 h-5" />
           </motion.button>
         </motion.div>
