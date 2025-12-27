@@ -28,12 +28,12 @@ const navLinks = [
 const socialLinks = [
   { 
     name: 'Instagram', 
-    href: 'https://instagram.com/purecraft.np', 
+    href: 'https://www.instagram.com/purecraft.media?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==', 
     icon: Instagram,
   },
   { 
     name: 'Facebook', 
-    href: 'https://facebook.com/purecraft.np', 
+    href: 'https://www.facebook.com/profile.php?id=61576632570565', 
     icon: FacebookIcon,
   },
 ];
