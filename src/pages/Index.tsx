@@ -1,13 +1,39 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import { SiteShell } from '@/components/layout/SiteShell';
+import { Navigation } from '@/components/layout/Navigation';
+import { Hero } from '@/components/sections/Hero';
+import { BentoGridSection } from '@/components/sections/BentoGrid';
+import { TwoColumnSection } from '@/components/sections/TwoColumn';
+import { ContactSection } from '@/components/sections/Contact';
+import { Footer } from '@/components/layout/Footer';
 
+/**
+ * Pure Craft - AI Appointment Setting
+ * samipkc.com.np
+ * 
+ * Premium, minimalist white theme with:
+ * - Editorial typography (Playfair Display + Inter)
+ * - Monochrome depth through layered shadows
+ * - Glassmorphism for subtle elevation
+ * - Framer Motion animations (respects reduced-motion)
+ * - Bento grid showcase
+ */
 const Index = () => {
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="mb-4 text-4xl font-bold">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
-      </div>
-    </div>
+    <SiteShell>
+      {/* SEO Meta - Would typically be in Helmet or Next.js Head */}
+      <title>Pure Craft — AI Appointment Setting | samipkc.com.np</title>
+      
+      <Navigation />
+      
+      <main id="main-content">
+        <Hero />
+        <BentoGridSection />
+        <TwoColumnSection />
+        <ContactSection />
+      </main>
+      
+      <Footer />
+    </SiteShell>
   );
 };
 

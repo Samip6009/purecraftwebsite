@@ -1,73 +1,101 @@
-# Welcome to your Lovable project
+# Pure Craft — AI Appointment Setting
 
-## Project info
+**samipkc.com.np**
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+Premium, minimalist white-themed website for Pure Craft AI Appointment Setting service.
 
-## How can I edit this code?
+## Design Tokens
 
-There are several ways of editing your application.
+### Colors
+| Token | Value | Usage |
+|-------|-------|-------|
+| `--background` | `#FFFFFF` | Main background |
+| `--foreground` | `#0B0B0B` | Primary text |
+| `--surface-1/2/3` | White to light gray | Layered surfaces |
+| `--text-primary/secondary/tertiary/muted` | Gray scale | Text hierarchy |
+| `--charcoal` | `#1F1F1F` | Accent elements |
+| `--glass-bg` | `rgba(255,255,255,0.6)` | Glass surfaces |
 
-**Use Lovable**
+### Shadows
+| Token | Usage |
+|-------|-------|
+| `shadow-depth-1` | Subtle elevation |
+| `shadow-depth-2` | Cards, buttons |
+| `shadow-depth-3` | Hover states |
+| `shadow-depth-4` | Prominent elements |
+| `shadow-glow` | Ambient glow |
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+### Typography
+| Token | Font | Usage |
+|-------|------|-------|
+| `font-serif` | Playfair Display | Headlines, display |
+| `font-sans` | Inter | Body, UI |
 
-Changes made via Lovable will be committed automatically to this repo.
+### Motion
+| Token | Duration | Usage |
+|-------|----------|-------|
+| `--duration-short` | 160ms | Micro-interactions |
+| `--duration-medium` | 320ms | Transitions |
+| `--duration-long` | 640ms | Complex animations |
 
-**Use your preferred IDE**
+### Easings
+- `--ease-out-cubic`: Smooth deceleration
+- `--ease-in-out-quad`: Balanced transitions
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### Bento Grid
+- `.bento-2x2`: 2-column grid
+- `.bento-3x3`: 3-column grid
+- `.bento-asymmetric`: Feature layout (2:1 ratio)
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+## Accessibility Features
 
-Follow these steps:
+- ✅ Skip to main content link
+- ✅ Proper heading hierarchy
+- ✅ Focus-visible outlines
+- ✅ `prefers-reduced-motion` respected
+- ✅ Base font-size 16px
+- ✅ ARIA labels on interactive elements
+- ✅ Semantic HTML structure
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+## Acceptance Checklist
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+- [x] Design tokens exist in `index.css` and `tailwind.config.ts`
+- [x] Fonts load via Google Fonts with `display=swap`
+- [x] `useReducedMotion` hook implemented and used
+- [x] No inline hex colors (all via CSS variables)
+- [x] Glass effects use blur + opacity
+- [x] Shadows provide layered depth
+- [x] Bento grid with multiple variants
+- [x] SiteShell provides consistent layout
+- [x] All animations respect reduced motion preference
 
-# Step 3: Install the necessary dependencies.
-npm i
+## File Structure
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
+```
+src/
+├── components/
+│   ├── layout/
+│   │   ├── SiteShell.tsx    # Global layout wrapper
+│   │   ├── Navigation.tsx   # Fixed header with glass effect
+│   │   └── Footer.tsx       # Site footer
+│   └── sections/
+│       ├── Hero.tsx         # Landing hero section
+│       ├── BentoGrid.tsx    # Feature grid showcase
+│       ├── TwoColumn.tsx    # About/benefits section
+│       └── Contact.tsx      # CTA contact section
+├── hooks/
+│   └── useReducedMotion.ts  # Accessibility hook
+├── lib/
+│   └── design-tokens.ts     # Exported token values
+├── pages/
+│   └── Index.tsx            # Main page composition
+└── index.css                # Global styles & CSS variables
 ```
 
-**Edit a file directly in GitHub**
+## Performance Notes
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+- Fonts preconnected for faster loading
+- CSS variables for minimal runtime style recalculation
+- Framer Motion animations skip when reduced motion preferred
+- Shadow tokens use optimized rgba values
+- Glassmorphism used sparingly for GPU efficiency
