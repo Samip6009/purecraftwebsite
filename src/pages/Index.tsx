@@ -1,6 +1,6 @@
 import { SiteShell } from '@/components/layout/SiteShell';
 import { Navigation } from '@/components/layout/Navigation';
-import { Hero } from '@/components/sections/Hero';
+import { HeroPremium } from '@/components/sections/HeroPremium';
 import { BentoGridSection } from '@/components/sections/BentoGrid';
 import { TwoColumnSection } from '@/components/sections/TwoColumn';
 import { ContactSection } from '@/components/sections/Contact';
@@ -20,13 +20,15 @@ import { Footer } from '@/components/layout/Footer';
 const Index = () => {
   return (
     <SiteShell>
-      {/* SEO Meta - Would typically be in Helmet or Next.js Head */}
-      <title>Pure Craft — AI Appointment Setting | samipkc.com.np</title>
-      
       <Navigation />
       
       <main id="main-content">
-        <Hero />
+        {/* Premium Hero with refined motion */}
+        <HeroPremium 
+          headlineVariant={0}
+          subheadVariant={0}
+        />
+        
         <BentoGridSection />
         <TwoColumnSection />
         <ContactSection />
