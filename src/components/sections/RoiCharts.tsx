@@ -20,6 +20,7 @@ interface RoiChartsProps {
   projectedRevenue: number;
   upliftRatio: number;
   prefersReducedMotion: boolean;
+  showComparison?: boolean;
 }
 
 export function RoiCharts({
