@@ -317,9 +317,10 @@ export function AnimatedRoiCalculator() {
   // Analytics
   const emitAnalytics = useCallback(() => {
     trackROICalculator(
-      { dealValue, leadsPerMonth, conversionRate, upliftPercent, timeHorizon },
+      { dealValue, leadsPerMonth, conversionRate, upliftPercent },
       calculations.additionalRevenue
     );
+    trackEvent('roi_time_horizon', { horizon: timeHorizon });
   }, [dealValue, leadsPerMonth, conversionRate, upliftPercent, timeHorizon, calculations.additionalRevenue]);
 
   const handleBookDemo = () => {
