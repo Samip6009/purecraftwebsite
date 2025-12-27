@@ -1,0 +1,144 @@
+{
+  "mediaGuidelines": {
+    "visualRatio": "80% visual / 20% text above the fold",
+    "maxHeadlineWords": 8,
+    "maxSubheadWords": 10,
+    "maxTileCaption": 6
+  },
+  "recommendedAssets": {
+    "hero": {
+      "video": {
+        "filename": "hero-preview.mp4",
+        "duration": "8-12s",
+        "format": ["mp4", "webm"],
+        "unsplashKeywords": ["modern office meeting", "marketing team brainstorm", "creative agency workspace", "data analytics dashboard"],
+        "altText": "Marketing team collaborating on digital growth strategy"
+      },
+      "poster": {
+        "filename": "hero-poster.jpg",
+        "formats": ["avif", "webp", "jpg"],
+        "dimensions": "1920x1080",
+        "unsplashKeywords": ["marketing strategy session", "team collaboration", "digital workspace"],
+        "altText": "Pure Craft team developing client growth strategy"
+      }
+    },
+    "portfolio": [
+      {
+        "id": "case-ecommerce",
+        "video": "case-ecommerce.mp4",
+        "poster": "case-ecommerce-poster.jpg",
+        "duration": "6s",
+        "unsplashKeywords": ["fashion ecommerce", "online shopping", "product photography"],
+        "altText": "E-commerce brand success visualization"
+      },
+      {
+        "id": "case-saas",
+        "video": "case-saas.mp4",
+        "poster": "case-saas-poster.jpg",
+        "duration": "6s",
+        "unsplashKeywords": ["SaaS dashboard", "software interface", "B2B technology"],
+        "altText": "SaaS platform growth metrics dashboard"
+      },
+      {
+        "id": "case-wellness",
+        "video": "case-wellness.mp4",
+        "poster": "case-wellness-poster.jpg",
+        "duration": "6s",
+        "unsplashKeywords": ["health wellness", "fitness coaching", "wellness brand"],
+        "altText": "Wellness brand marketing success story"
+      },
+      {
+        "id": "case-coaching",
+        "image": "case-coaching.jpg",
+        "unsplashKeywords": ["business coach", "personal brand", "thought leader"],
+        "altText": "Executive coach personal brand growth"
+      },
+      {
+        "id": "case-realestate",
+        "image": "case-realestate.jpg",
+        "unsplashKeywords": ["real estate agent", "property showing", "luxury home"],
+        "altText": "Real estate agency automation success"
+      }
+    ],
+    "team": [
+      {
+        "filename": "team-strategy.jpg",
+        "unsplashKeywords": ["marketing team meeting", "creative brainstorm", "agency team"],
+        "altText": "Pure Craft strategy team in planning session"
+      },
+      {
+        "filename": "team-analytics.jpg",
+        "unsplashKeywords": ["data dashboard", "analytics review", "metrics meeting"],
+        "altText": "Team analyzing campaign performance data"
+      }
+    ],
+    "decorative": [
+      {
+        "filename": "pattern-grid.svg",
+        "type": "inline-svg",
+        "description": "Subtle grid pattern for backgrounds"
+      },
+      {
+        "filename": "shape-blob.svg",
+        "type": "inline-svg",
+        "description": "Organic blob shape for visual interest"
+      }
+    ]
+  },
+  "directories": {
+    "photos": "/public/assets/photos/",
+    "videos": "/public/assets/videos/",
+    "icons": "/public/assets/icons/"
+  },
+  "jsonLdExamples": {
+    "heroVideo": {
+      "@context": "https://schema.org",
+      "@type": "VideoObject",
+      "name": "Pure Craft Digital Marketing Overview",
+      "description": "See how Pure Craft helps businesses grow with AI-powered marketing automation",
+      "thumbnailUrl": "https://samipkc.com.np/assets/photos/hero-poster.jpg",
+      "uploadDate": "2024-01-15",
+      "duration": "PT12S",
+      "contentUrl": "https://samipkc.com.np/assets/videos/hero-preview.mp4"
+    },
+    "caseStudyImage": {
+      "@context": "https://schema.org",
+      "@type": "ImageObject",
+      "name": "E-commerce Success Case Study",
+      "description": "Fashion retail brand achieved 312% lead increase",
+      "contentUrl": "https://samipkc.com.np/assets/photos/case-ecommerce.jpg",
+      "width": 1200,
+      "height": 800
+    }
+  },
+  "copyGuidelines": {
+    "headlines": [
+      "Leads that close.",
+      "More demos. Less chaos.",
+      "Your growth engine.",
+      "Results you can measure.",
+      "Scale without the stress."
+    ],
+    "subheads": [
+      "AI marketing for real growth.",
+      "Pipeline on autopilot.",
+      "Book more, close more.",
+      "Transparent ROI projection.",
+      "From leads to revenue."
+    ],
+    "ctaVariants": [
+      "Book Demo",
+      "Get This Result",
+      "See Your ROI",
+      "Start Growing",
+      "Schedule Call"
+    ],
+    "tileCaptions": [
+      "+312% leads",
+      "47% close rate",
+      "8.2x ROAS",
+      "92% time saved",
+      "23K followers/mo"
+    ]
+  }
+}
