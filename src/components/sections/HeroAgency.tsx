@@ -91,9 +91,21 @@ const LeadNotification = ({ reduced }: { reduced: boolean }) => {
 
 export function HeroAgency() {
   const prefersReducedMotion = useReducedMotion() ?? false;
-  // Remove scroll-based transforms for performance
-  // Only use them if NOT on mobile and NOT reduced-motion
-  const shouldUseScrollTransforms = !prefersReducedMotion && typeof window !== 'undefined' && window.innerWidth >= 1024;
+  // Only use scroll transforms on desktop (lg+) and only if JS fully loaded
+  const [isDesktop, setIsDesktop] = useState(false);
+  
+  useEffect(() => {
+    const checkDesktop = () => setIsDesktop(typeof window !== 'undefined' && window.innerWidth >= 1024);
+    checkDesktop();
+    const timer = setTimeout(checkDesktop, 100); // Re-check after hydration
+    window.addEventListener('resize', checkDesktop);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('resize', checkDesktop);
+    };
+  }, []);
+  
+  const shouldUseScrollTransforms = !prefersReducedMotion && isDesktop;
   const { scrollY } = useScroll();
   const backgroundY = shouldUseScrollTransforms ? useTransform(scrollY, [0, 500], [0, 150]) : 0;
   const opacity = shouldUseScrollTransforms ? useTransform(scrollY, [0, 400], [1, 0]) : 1;
@@ -110,37 +122,40 @@ export function HeroAgency() {
         {/* Base gradient mesh */}
         <motion.div 
           className="absolute inset-0"
-          style={{ y: prefersReducedMotion ? 0 : backgroundY }}
+          style={{ 
+            y: backgroundY,
+            willChange: shouldUseScrollTransforms ? 'transform' : 'auto'
+          }}
         >
           {/* Dark overlay for text contrast */}
           <div className="absolute inset-0 bg-charcoal" />
           
-          {/* Animated gradient orbs - GPU accelerated only */}
+          {/* Animated gradient orbs - GPU accelerated only, lighter opacity */}
           {!prefersReducedMotion && (
             <>
               <motion.div
                 className="absolute w-[800px] h-[800px] rounded-full"
                 style={{
-                  background: 'radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%)',
+                  background: 'radial-gradient(circle, rgba(255,255,255,0.04) 0%, transparent 70%)',
                   top: '-20%',
                   right: '-10%',
                   willChange: 'transform',
                 }}
                 animate={{ 
-                  scale: [1, 1.15, 1],
+                  scale: [1, 1.12, 1],
                 }}
                 transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
               />
               <motion.div
                 className="absolute w-[600px] h-[600px] rounded-full"
                 style={{
-                  background: 'radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%)',
+                  background: 'radial-gradient(circle, rgba(255,255,255,0.03) 0%, transparent 70%)',
                   bottom: '-10%',
                   left: '-5%',
                   willChange: 'transform',
                 }}
                 animate={{ 
-                  scale: [1, 1.12, 1],
+                  scale: [1, 1.1, 1],
                 }}
                 transition={{ duration: 25, repeat: Infinity, ease: 'easeInOut' }}
               />
@@ -252,12 +267,13 @@ export function HeroAgency() {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.2, duration: prefersReducedMotion ? 0 : 0.8 }}
               className="relative mx-auto max-w-sm lg:max-w-md"
+              style={{ willChange: 'transform' }}
             >
-              {/* Glow effect */}
-              <div className="absolute inset-0 bg-primary-foreground/10 rounded-3xl blur-3xl" />
+              {/* Optimized glow effect - lighter blur */}
+              <div className="absolute inset-0 bg-primary-foreground/5 rounded-3xl blur-2xl" />
               
               {/* Dashboard card */}
-              <div className="relative bg-charcoal/80 rounded-3xl border border-primary-foreground/10 p-6 md:p-8 shadow-md">
+              <div className="relative bg-charcoal/80 rounded-3xl border border-primary-foreground/10 p-6 md:p-8 shadow-sm">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-2">

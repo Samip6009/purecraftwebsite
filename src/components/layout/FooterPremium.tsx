@@ -7,7 +7,6 @@ import { Instagram, ArrowUpRight, Mail } from 'lucide-react';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { Container } from './SiteShell';
 import { trackSocialClick } from '@/lib/analytics';
-import pureCraftLogo from '@/assets/pure-craft-logo.svg';
 
 // Facebook icon
 const FacebookIcon = ({ className }: { className?: string }) => (
@@ -77,7 +76,7 @@ export function FooterPremium() {
           <div className="col-span-2 lg:col-span-1">
             <a href="/" className="inline-flex items-center gap-3 mb-6">
               <img 
-                src={pureCraftLogo} 
+                src="/assets/pure-craft-logo.png" 
                 alt="Pure Craft - Digital Marketing Agency Nepal" 
                 className="h-10 w-auto"
                 width={40}

@@ -78,23 +78,24 @@ const ServiceTile = ({
       whileHover={reduced ? {} : { y: -8 }}
       className="group relative aspect-square rounded-2xl overflow-hidden cursor-pointer"
     >
-      {/* Background image with lazy loading - Brightened */}
+      {/* Background image with lazy loading - Brightened & Optimized */}
       <img
         src={service.bgImage}
         alt={service.title}
         loading={index > 2 ? "lazy" : "eager"}
         decoding="async"
-        className="absolute inset-0 w-full h-full object-cover brightness-125"
+        className="absolute inset-0 w-full h-full object-cover brightness-150"
         srcSet={`${service.bgImage} 1x, ${service.bgImage} 2x`}
+        style={{ willChange: 'auto' }}
       />
       
       {/* Gradient overlay with brand color - Reduced opacity for visibility */}
       <div 
-        className={`absolute inset-0 bg-gradient-to-br ${service.gradient} opacity-70 mix-blend-multiply`}
+        className={`absolute inset-0 bg-gradient-to-br ${service.gradient} opacity-60 mix-blend-multiply`}
       />
       
       {/* Lighter overlay for text contrast */}
-      <div className="absolute inset-0 bg-charcoal/15" />
+      <div className="absolute inset-0 bg-charcoal/10" />
       
       {/* Content */}
       <div className="absolute inset-0 p-5 flex flex-col justify-between">
