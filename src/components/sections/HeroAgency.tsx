@@ -67,6 +67,15 @@ const LeadNotification = ({ reduced }: { reduced: boolean }) => {
   }, [reduced]);
 
   const lead = leads[currentLead];
+  
+  // Extract initials from name (e.g., "Sarah M." -> "SM")
+  const getInitials = (name: string) => {
+    const parts = name.split(' ');
+    if (parts.length >= 2) {
+      return (parts[0][0] + parts[1][0]).toUpperCase();
+    }
+    return parts[0][0].toUpperCase();
+  };
 
   return (
     <motion.div
@@ -78,7 +87,9 @@ const LeadNotification = ({ reduced }: { reduced: boolean }) => {
     >
       <div className="flex items-center gap-3">
         <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
-          <span className="text-lg">Γ£ô</span>
+          <span className="text-sm font-semibold text-green-700">
+            {getInitials(lead.name)}
+          </span>
         </div>
         <div>
           <p className="text-small font-medium text-text-primary">{lead.name} {lead.action}</p>
