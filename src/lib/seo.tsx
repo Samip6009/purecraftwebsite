@@ -12,7 +12,7 @@ export const siteConfig = {
   tagline: 'Performance Marketing for Nepal Businesses',
   description: 'Pure Craft is Nepal\'s leading digital marketing agency. Performance-driven marketing, AI appointment setting, and lead generation for growing businesses in Nepal.',
   url: 'https://samipkc.com.np',
-  logo: '/pure-craft-logo.png',
+  logo: '/assets/pure-craft-logo.png',
   email: 'hello@samipkc.com.np',
   phone: '+9779810071283',
   socials: {
