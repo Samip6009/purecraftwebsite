@@ -39,5 +39,6 @@ export default defineConfig(({ mode }) => ({
       },
     },
     chunkSizeWarningLimit: 700,
+    assetsInlineLimit: 4096,
   },
 }));
