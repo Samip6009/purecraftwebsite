@@ -57,11 +57,11 @@ export function Header() {
       <div className="absolute inset-0 glass" />
       
       <Container size="wide" className="relative">
-        <div className="flex items-center justify-between h-16 md:h-20">
-          {/* Logo */}
+        <div className="flex items-center justify-between h-16 md:h-20 py-2">
+          {/* Logo - Fixed sizing and vertical centering */}
           <motion.a
             href="/"
-            className="relative z-10 flex items-center gap-3"
+            className="relative z-10 flex items-center gap-2 md:gap-3 flex-shrink-0"
             whileHover={prefersReducedMotion ? {} : { scale: 1.02 }}
             whileTap={prefersReducedMotion ? {} : { scale: 0.98 }}
             aria-label="Pure Craft - Home"
@@ -69,14 +69,15 @@ export function Header() {
             <img
               src="/assets/pure-craft-logo.svg"
               alt="Pure Craft"
-              width={48}
-              height={48}
+              width={40}
+              height={40}
               loading="eager"
               decoding="async"
               fetchpriority="high"
-              className="h-10 w-10 object-contain"
+              className="w-8 h-8 md:w-10 md:h-10 flex-shrink-0 object-contain"
+              style={{ imageRendering: 'crisp-edges' }}
             />
-            <span className="font-serif text-base sm:text-lg md:text-xl font-medium text-text-primary">
+            <span className="font-serif text-sm sm:text-base md:text-lg font-medium text-text-primary whitespace-nowrap hidden sm:inline">
               Pure Craft
             </span>
           </motion.a>

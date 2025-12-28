@@ -171,12 +171,13 @@ export function HeroAgency() {
         style={{ opacity: prefersReducedMotion ? 1 : opacity }}
       >
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center min-h-[60vh]">
-          {/* Left: Minimal text */}
+          {/* Left: Minimal text - Sequenced animations */}
           <div className="order-2 lg:order-1">
+            {/* Headline entrance */}
             <motion.div
               initial={{ opacity: 0, y: 40 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: prefersReducedMotion ? 0 : 0.8, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: prefersReducedMotion ? 0 : 0.7, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
             >
               {/* Hidden H1 for SEO */}
               <h1 className="sr-only">Pure Craft — Digital Marketing Agency in Nepal</h1>
@@ -186,22 +187,34 @@ export function HeroAgency() {
                 AI Marketing<br />
                 <span className="text-primary-foreground/60">for Real Growth</span>
               </span>
-              
-              <p className="text-lg md:text-xl text-primary-foreground/70 max-w-md mb-8">
-                Performance-focused digital marketing in Nepal.
-              </p>
-              
-              <div className="flex flex-col sm:flex-row gap-4">
-                <motion.button
-                  onClick={handlePrimaryCTA}
-                  className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-primary-foreground text-charcoal font-semibold rounded-full shadow-depth-4"
-                  whileHover={prefersReducedMotion ? {} : { scale: 1.03 }}
-                  whileTap={prefersReducedMotion ? {} : { scale: 0.97 }}
-                >
-                  Book Demo
-                  <ArrowUpRight className="w-5 h-5" />
-                </motion.button>
-              </div>
+            </motion.div>
+            
+            {/* Subheadline entrance (staggered) */}
+            <motion.p
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: prefersReducedMotion ? 0 : 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.3 }}
+              className="text-lg md:text-xl text-primary-foreground/70 max-w-md mb-8"
+            >
+              Performance-focused digital marketing in Nepal.
+            </motion.p>
+            
+            {/* CTA button entrance (final stagger) */}
+            <motion.div
+              initial={{ opacity: 0, y: 15 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: prefersReducedMotion ? 0 : 0.6, ease: [0.16, 1, 0.3, 1], delay: 0.5 }}
+              className="flex flex-col sm:flex-row gap-4"
+            >
+              <motion.button
+                onClick={handlePrimaryCTA}
+                className="inline-flex items-center justify-center gap-2 px-8 py-4 bg-primary-foreground text-charcoal font-semibold rounded-full shadow-depth-4"
+                whileHover={prefersReducedMotion ? {} : { scale: 1.03 }}
+                whileTap={prefersReducedMotion ? {} : { scale: 0.97 }}
+              >
+                Book Demo
+                <ArrowUpRight className="w-5 h-5" />
+              </motion.button>
             </motion.div>
           </div>
 
