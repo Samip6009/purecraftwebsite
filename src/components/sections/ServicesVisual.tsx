@@ -13,7 +13,7 @@ const services = [
     benefit: 'Meta & Google that convert',
     icon: Megaphone,
     gradient: 'from-blue-600 to-purple-700',
-    bgImage: '/assets/photos/paid-ads.jpg',
+    bgImage: '/assets/photos/service-ads.jpg',
     bgColor: '#1e40af',
   },
   {
@@ -22,7 +22,7 @@ const services = [
     benefit: 'Landing pages that capture',
     icon: Layers,
     gradient: 'from-purple-600 to-pink-700',
-    bgImage: '/assets/photos/funnels.jpg',
+    bgImage: '/assets/photos/service-funnels.jpg',
     bgColor: '#6b21a8',
   },
   {
@@ -31,7 +31,7 @@ const services = [
     benefit: 'Automated follow-up',
     icon: Database,
     gradient: 'from-pink-600 to-red-700',
-    bgImage: '/assets/photos/crm.jpg',
+    bgImage: '/assets/photos/service-crm.jpg',
     bgColor: '#831843',
   },
   {
@@ -40,7 +40,7 @@ const services = [
     benefit: 'Calendar fills itself',
     icon: Bot,
     gradient: 'from-orange-600 to-yellow-700',
-    bgImage: '/assets/photos/booking.jpg',
+    bgImage: '/assets/photos/service-calendar.jpg',
     bgColor: '#9a3412',
   },
   {
@@ -49,7 +49,7 @@ const services = [
     benefit: 'Know what works',
     icon: LineChart,
     gradient: 'from-green-600 to-teal-700',
-    bgImage: '/assets/photos/reporting.jpg',
+    bgImage: '/assets/photos/service-reports.jpg',
     bgColor: '#15803d',
   },
 ];

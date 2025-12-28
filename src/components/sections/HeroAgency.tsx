@@ -32,8 +32,9 @@ const FloatingKPI = ({
   >
     <motion.div 
       className="bg-background rounded-2xl border border-border shadow-md p-4 md:p-5"
-      animate={reduced ? {} : { y: [0, -8, 0] }}
+      animate={reduced ? {} : { y: [0, -6, 0] }}
       transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: delay * 2 }}
+      style={{ willChange: 'transform' }}
     >
       <div className="flex items-center gap-3">
         <div className="w-10 h-10 md:w-12 md:h-12 rounded-xl bg-surface-2 flex items-center justify-center">
@@ -90,9 +91,12 @@ const LeadNotification = ({ reduced }: { reduced: boolean }) => {
 
 export function HeroAgency() {
   const prefersReducedMotion = useReducedMotion() ?? false;
+  // Remove scroll-based transforms for performance
+  // Only use them if NOT on mobile and NOT reduced-motion
+  const shouldUseScrollTransforms = !prefersReducedMotion && typeof window !== 'undefined' && window.innerWidth >= 1024;
   const { scrollY } = useScroll();
-  const backgroundY = useTransform(scrollY, [0, 500], [0, 150]);
-  const opacity = useTransform(scrollY, [0, 400], [1, 0]);
+  const backgroundY = shouldUseScrollTransforms ? useTransform(scrollY, [0, 500], [0, 150]) : 0;
+  const opacity = shouldUseScrollTransforms ? useTransform(scrollY, [0, 400], [1, 0]) : 1;
 
   const handlePrimaryCTA = () => {
     trackCTAClick('Book Demo', 'hero_agency', '#contact');
@@ -111,7 +115,7 @@ export function HeroAgency() {
           {/* Dark overlay for text contrast */}
           <div className="absolute inset-0 bg-charcoal" />
           
-          {/* Animated gradient orbs */}
+          {/* Animated gradient orbs - GPU accelerated only */}
           {!prefersReducedMotion && (
             <>
               <motion.div
@@ -120,10 +124,10 @@ export function HeroAgency() {
                   background: 'radial-gradient(circle, rgba(255,255,255,0.08) 0%, transparent 70%)',
                   top: '-20%',
                   right: '-10%',
+                  willChange: 'transform',
                 }}
                 animate={{ 
-                  scale: [1, 1.2, 1],
-                  rotate: [0, 45, 0],
+                  scale: [1, 1.15, 1],
                 }}
                 transition={{ duration: 20, repeat: Infinity, ease: 'easeInOut' }}
               />
@@ -133,10 +137,10 @@ export function HeroAgency() {
                   background: 'radial-gradient(circle, rgba(255,255,255,0.05) 0%, transparent 70%)',
                   bottom: '-10%',
                   left: '-5%',
+                  willChange: 'transform',
                 }}
                 animate={{ 
-                  scale: [1, 1.15, 1],
-                  rotate: [0, -30, 0],
+                  scale: [1, 1.12, 1],
                 }}
                 transition={{ duration: 25, repeat: Infinity, ease: 'easeInOut' }}
               />
