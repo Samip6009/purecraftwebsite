@@ -105,10 +105,13 @@ export function HeroAgency() {
     };
   }, []);
   
-  const shouldUseScrollTransforms = !prefersReducedMotion && isDesktop;
+  // Always call hooks unconditionally (Rules of Hooks)
   const { scrollY } = useScroll();
-  const backgroundY = shouldUseScrollTransforms ? useTransform(scrollY, [0, 500], [0, 150]) : 0;
-  const opacity = shouldUseScrollTransforms ? useTransform(scrollY, [0, 400], [1, 0]) : 1;
+  const backgroundY = useTransform(scrollY, [0, 500], [0, 150]);
+  const opacity = useTransform(scrollY, [0, 400], [1, 0]);
+  
+  // Determine if we should apply transforms after hooks are called
+  const shouldUseScrollTransforms = !prefersReducedMotion && isDesktop;
 
   const handlePrimaryCTA = () => {
     trackCTAClick('Book Demo', 'hero_agency', '#contact');
@@ -123,7 +126,7 @@ export function HeroAgency() {
         <motion.div 
           className="absolute inset-0"
           style={{ 
-            y: backgroundY,
+            y: shouldUseScrollTransforms ? backgroundY : 0,
             willChange: shouldUseScrollTransforms ? 'transform' : 'auto'
           }}
         >
@@ -183,7 +186,7 @@ export function HeroAgency() {
       {/* Content */}
       <motion.div 
         className="relative z-10 w-full max-w-7xl mx-auto px-6 md:px-8 lg:px-12 py-32"
-        style={{ opacity: prefersReducedMotion ? 1 : opacity }}
+        style={{ opacity: shouldUseScrollTransforms ? opacity : 1 }}
       >
         <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center min-h-[60vh]">
           {/* Left: Minimal text - Sequenced animations */}
