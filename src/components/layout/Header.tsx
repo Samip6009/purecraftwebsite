@@ -74,10 +74,10 @@ export function Header() {
               loading="eager"
               decoding="async"
               fetchpriority="high"
-              className="w-8 h-8 md:w-10 md:h-10 flex-shrink-0 object-contain"
+              className="w-7 h-7 sm:w-8 sm:h-8 md:w-10 md:h-10 flex-shrink-0 object-contain"
               style={{ imageRendering: 'crisp-edges' }}
             />
-            <span className="font-serif text-sm sm:text-base md:text-lg font-medium text-text-primary whitespace-nowrap hidden sm:inline">
+            <span className="font-serif text-sm sm:text-base md:text-lg font-medium text-text-primary whitespace-nowrap">
               Pure Craft
             </span>
           </motion.a>
