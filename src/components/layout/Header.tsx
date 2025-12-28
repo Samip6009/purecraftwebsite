@@ -67,7 +67,7 @@ export function Header() {
             aria-label="Pure Craft - Home"
           >
             <img
-              src="/assets/pure-craft-logo.png"
+              src="/assets/pure-craft-logo.svg"
               alt="Pure Craft"
               width={48}
               height={48}

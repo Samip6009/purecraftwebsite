@@ -1,6 +1,6 @@
 /**
- * ServicesVisual.tsx - Visual service tiles
- * Pure Craft SMMA - Premium visual treatment
+ * ServicesVisual.tsx - Visual service tiles with image backgrounds
+ * Pure Craft SMMA - Premium visual treatment with lazy loading
  */
 import { motion, useReducedMotion } from 'framer-motion';
 import { Container, Section } from '@/components/layout/SiteShell';
@@ -13,6 +13,8 @@ const services = [
     benefit: 'Meta & Google that convert',
     icon: Megaphone,
     gradient: 'from-blue-600 to-purple-700',
+    bgImage: '/assets/photos/paid-ads.jpg',
+    bgColor: '#1e40af',
   },
   {
     id: 'funnels',
@@ -20,6 +22,8 @@ const services = [
     benefit: 'Landing pages that capture',
     icon: Layers,
     gradient: 'from-purple-600 to-pink-700',
+    bgImage: '/assets/photos/funnels.jpg',
+    bgColor: '#6b21a8',
   },
   {
     id: 'lead-management',
@@ -27,6 +31,8 @@ const services = [
     benefit: 'Automated follow-up',
     icon: Database,
     gradient: 'from-pink-600 to-red-700',
+    bgImage: '/assets/photos/crm.jpg',
+    bgColor: '#831843',
   },
   {
     id: 'appointment-booking',
@@ -34,6 +40,8 @@ const services = [
     benefit: 'Calendar fills itself',
     icon: Bot,
     gradient: 'from-orange-600 to-yellow-700',
+    bgImage: '/assets/photos/booking.jpg',
+    bgColor: '#9a3412',
   },
   {
     id: 'reporting',
@@ -41,6 +49,8 @@ const services = [
     benefit: 'Know what works',
     icon: LineChart,
     gradient: 'from-green-600 to-teal-700',
+    bgImage: '/assets/photos/reporting.jpg',
+    bgColor: '#15803d',
   },
 ];
 
@@ -65,34 +75,49 @@ const ServiceTile = ({
   return (
     <motion.div
       {...appearProps}
-      whileHover={reduced ? {} : { y: -8, scale: 1.02 }}
+      whileHover={reduced ? {} : { y: -8 }}
       className="group relative aspect-square rounded-2xl overflow-hidden cursor-pointer"
     >
-      {/* Gradient background */}
-      <div className={`absolute inset-0 bg-gradient-to-br ${service.gradient}`} />
+      {/* Background image with lazy loading */}
+      <img
+        src={service.bgImage}
+        alt={service.title}
+        loading={index > 2 ? "lazy" : "eager"}
+        decoding="async"
+        className="absolute inset-0 w-full h-full object-cover"
+        srcSet={`${service.bgImage} 1x, ${service.bgImage} 2x`}
+      />
+      
+      {/* Gradient overlay with brand color */}
+      <div 
+        className={`absolute inset-0 bg-gradient-to-br ${service.gradient} opacity-85 mix-blend-multiply`}
+      />
+      
+      {/* Dark overlay for text contrast */}
+      <div className="absolute inset-0 bg-charcoal/30" />
       
       {/* Content */}
       <div className="absolute inset-0 p-5 flex flex-col justify-between">
-        {/* Icon */}
+        {/* Icon container */}
         <div 
-          className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-primary-foreground/20 flex items-center justify-center"
+          className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-white/20 backdrop-blur-sm flex items-center justify-center flex-shrink-0"
         >
-          <Icon className="w-6 h-6 md:w-7 md:h-7 text-primary-foreground" />
+          <Icon className="w-6 h-6 md:w-7 md:h-7 text-white" />
         </div>
 
         {/* Text */}
         <div>
-          <h3 className="font-serif text-xl md:text-2xl text-primary-foreground mb-1">
+          <h3 className="font-serif text-xl md:text-2xl text-white mb-1 leading-tight">
             {service.title}
           </h3>
-          <p className="text-small text-primary-foreground/80">
+          <p className="text-small text-white/90 leading-snug">
             {service.benefit}
           </p>
         </div>
       </div>
 
-      {/* Hover overlay */}
-      <div className="absolute inset-0 bg-charcoal/0 group-hover:bg-charcoal/10 transition-colors duration-300" />
+      {/* Hover effect - subtle highlight */}
+      <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors duration-300 pointer-events-none" />
     </motion.div>
   );
 };

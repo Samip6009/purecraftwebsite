@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 240" width="200" height="240">
+  <!-- Define gradient for 3D effect -->
+  <defs>
+    <linearGradient id="pcGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a1a1a;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#2d2d2d;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#0a0a0a;stop-opacity:1" />
+    </linearGradient>
+    
+    <linearGradient id="pcHighlight" x1="0%" y1="0%" x2="50%" y2="50%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:0.3" />
+      <stop offset="100%" style="stop-color:#ffffff;stop-opacity:0" />
+    </linearGradient>
+  </defs>
+  
+  <!-- P Letter -->
+  <g transform="translate(30, 50)">
+    <!-- Main P shape -->
+    <path d="M 0 100 L 0 0 L 45 0 C 65 0 75 15 75 35 C 75 50 68 60 50 65 L 0 65 Z" 
+          fill="url(#pcGradient)" stroke="white" stroke-width="2" stroke-linejoin="round"/>
+    
+    <!-- Highlight effect -->
+    <path d="M 5 5 L 40 5 C 60 5 70 18 70 35 C 70 48 65 58 50 62 L 5 62 Z" 
+          fill="url(#pcHighlight)" opacity="0.4"/>
+  </g>
+  
+  <!-- C Letter -->
+  <g transform="translate(110, 60)">
+    <!-- Main C shape - curved bracket -->
+    <path d="M 65 0 Q 75 15 75 40 Q 75 65 65 80 L 30 80 L 30 10 L 65 10"
+          fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    
+    <!-- Fill with gradient -->
+    <path d="M 65 0 Q 75 15 75 40 Q 75 65 65 80 L 30 80 L 30 10 L 65 10 Z"
+          fill="url(#pcGradient)" opacity="0.9"/>
+    
+    <!-- Inner highlight -->
+    <path d="M 60 5 Q 70 18 70 40 Q 70 62 60 75 L 35 75 L 35 15 L 60 5"
+          fill="url(#pcHighlight)" opacity="0.3"/>
+  </g>
+  
+  <!-- Shield bottom point -->
+  <g transform="translate(60, 140)">
+    <polygon points="40,0 70,30 40,60 10,30" fill="url(#pcGradient)" stroke="white" stroke-width="2"/>
+    <polygon points="40,5 65,28 40,55 15,28" fill="url(#pcHighlight)" opacity="0.2"/>
+  </g>
+</svg>
