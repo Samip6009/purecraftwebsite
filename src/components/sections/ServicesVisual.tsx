@@ -54,39 +54,31 @@ const ServiceTile = ({
   reduced: boolean;
 }) => {
   const Icon = service.icon;
+  
+  const appearProps = reduced ? {} : {
+    initial: { opacity: 0, y: 30 },
+    whileInView: { opacity: 1, y: 0 },
+    viewport: { once: true, margin: '-30px' },
+    transition: { duration: 0.5, delay: index * 0.1 }
+  };
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 30 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: '-30px' }}
-      transition={{ duration: reduced ? 0 : 0.5, delay: index * 0.1 }}
+      {...appearProps}
       whileHover={reduced ? {} : { y: -8, scale: 1.02 }}
       className="group relative aspect-square rounded-2xl overflow-hidden cursor-pointer"
     >
       {/* Gradient background */}
       <div className={`absolute inset-0 bg-gradient-to-br ${service.gradient}`} />
       
-      {/* Animated shimmer */}
-      {!reduced && (
-        <motion.div
-          className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent"
-          initial={{ x: '-100%' }}
-          whileHover={{ x: '100%' }}
-          transition={{ duration: 0.6 }}
-        />
-      )}
-      
       {/* Content */}
       <div className="absolute inset-0 p-5 flex flex-col justify-between">
         {/* Icon */}
-        <motion.div 
-          className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-primary-foreground/20 backdrop-blur-sm flex items-center justify-center"
-          animate={reduced ? {} : { rotate: [0, 5, 0, -5, 0] }}
-          transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut', delay: index * 0.3 }}
+        <div 
+          className="w-12 h-12 md:w-14 md:h-14 rounded-2xl bg-primary-foreground/20 flex items-center justify-center"
         >
           <Icon className="w-6 h-6 md:w-7 md:h-7 text-primary-foreground" />
-        </motion.div>
+        </div>
 
         {/* Text */}
         <div>

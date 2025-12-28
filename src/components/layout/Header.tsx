@@ -8,7 +8,6 @@ import { Menu, X, ArrowUpRight, Instagram } from 'lucide-react';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { Container } from './SiteShell';
 import { trackCTAClick, trackSocialClick } from '@/lib/analytics';
-import pureCraftLogoSvg from '@/assets/pure-craft-logo.svg';
 
 // Facebook icon (not in lucide-react)
 const FacebookIcon = ({ className }: { className?: string }) => (
@@ -68,14 +67,14 @@ export function Header() {
             aria-label="Pure Craft - Home"
           >
             <img
-              src={pureCraftLogoSvg}
-              alt="Pure Craft logo"
-              className="h-10 w-auto"
+              src="/assets/pure-craft-logo.png"
+              alt="Pure Craft"
               width={48}
               height={48}
               loading="eager"
               decoding="async"
-              fetchPriority="high"
+              fetchpriority="high"
+              className="h-10 w-10 object-contain"
             />
             <span className="font-serif text-base sm:text-lg md:text-xl font-medium text-text-primary">
               Pure Craft

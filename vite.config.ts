@@ -17,13 +17,15 @@ export default defineConfig(({ mode }) => ({
     },
   },
   build: {
+    cssCodeSplit: true,
+    sourcemap: false,
     rollupOptions: {
       output: {
         manualChunks(id) {
           // Split vendor code for better caching
           if (id.includes('node_modules')) {
             if (id.includes('framer-motion')) {
-              return 'vendor-framer';
+              return 'lib-framer-motion';
             }
             if (id.includes('radix-ui') || id.includes('@radix-ui')) {
               return 'vendor-radix';
@@ -36,7 +38,6 @@ export default defineConfig(({ mode }) => ({
         },
       },
     },
-    // Increase chunk size warning limit for vendor chunks
-    chunkSizeWarningLimit: 1000,
+    chunkSizeWarningLimit: 700,
   },
 }));

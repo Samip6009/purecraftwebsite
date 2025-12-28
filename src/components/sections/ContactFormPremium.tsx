@@ -80,6 +80,7 @@ function PhoneInput({
         
         <input
           type="tel"
+          name="phone"
           value={value}
           onChange={(e) => onChange(formatPhoneDisplay(e.target.value))}
           placeholder="XXX-XXX-XXXX"
@@ -185,14 +186,17 @@ export function ContactFormPremium() {
     trackFormStart('contact');
     setIsLoading(true);
     
-    const payload = {
-      ...formData,
-      phoneE164: formatPhoneE164(formData.countryCode, formData.phone),
-      submittedAt: new Date().toISOString(),
-    };
+    // Let Netlify handle the form submission natively
+    const form = e.currentTarget;
     
     try {
-      console.log('Form payload:', payload);
+      // Submit to Netlify
+      await fetch('/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: new URLSearchParams(new FormData(form) as any).toString()
+      });
+      
       trackFormSubmit('contact', true);
       setIsSubmitted(true);
     } catch {
@@ -346,6 +350,7 @@ export function ContactFormPremium() {
                     </label>
                     <input
                       type="text"
+                      name="fullName"
                       value={formData.name}
                       onChange={(e) => updateField('name', e.target.value)}
                       placeholder="John Doe"
@@ -365,6 +370,7 @@ export function ContactFormPremium() {
                     </label>
                     <input
                       type="email"
+                      name="email"
                       value={formData.email}
                       onChange={(e) => updateField('email', e.target.value)}
                       placeholder="john@company.com"

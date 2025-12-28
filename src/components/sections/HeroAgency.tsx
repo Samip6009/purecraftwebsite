@@ -31,7 +31,7 @@ const FloatingKPI = ({
     className={`absolute ${position} z-20`}
   >
     <motion.div 
-      className="bg-background/95 backdrop-blur-xl rounded-2xl border border-border/50 shadow-depth-4 p-4 md:p-5"
+      className="bg-background rounded-2xl border border-border shadow-md p-4 md:p-5"
       animate={reduced ? {} : { y: [0, -8, 0] }}
       transition={{ duration: 4, repeat: Infinity, ease: 'easeInOut', delay: delay * 2 }}
     >
@@ -73,7 +73,7 @@ const LeadNotification = ({ reduced }: { reduced: boolean }) => {
       initial={{ opacity: 0, x: -20 }}
       animate={{ opacity: 1, x: 0 }}
       exit={{ opacity: 0, x: 20 }}
-      className="bg-background/95 backdrop-blur-xl rounded-2xl border border-border/50 shadow-depth-3 p-4"
+      className="bg-background rounded-2xl border border-border shadow-md p-4"
     >
       <div className="flex items-center gap-3">
         <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
@@ -240,7 +240,7 @@ export function HeroAgency() {
               <div className="absolute inset-0 bg-primary-foreground/10 rounded-3xl blur-3xl" />
               
               {/* Dashboard card */}
-              <div className="relative bg-background/10 backdrop-blur-xl rounded-3xl border border-primary-foreground/10 p-6 md:p-8">
+              <div className="relative bg-charcoal/80 rounded-3xl border border-primary-foreground/10 p-6 md:p-8 shadow-md">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-6">
                   <div className="flex items-center gap-2">

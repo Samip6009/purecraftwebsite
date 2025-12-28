@@ -1,4 +1,4 @@
-# Netlify headers for aggressive caching and performance
+# Netlify headers for caching and performance
 # https://docs.netlify.com/routing/headers/
 
 # All pages - security and caching
@@ -7,6 +7,7 @@
   X-Content-Type-Options: nosniff
   Referrer-Policy: strict-origin-when-cross-origin
   Permissions-Policy: camera=(), microphone=(), geolocation=()
+  Cache-Control: public, max-age=0, must-revalidate
 
 # Static assets - immutable caching
 /assets/*
