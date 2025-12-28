@@ -267,9 +267,9 @@ export function ContactFormPremium() {
                 <Mail className="w-5 h-5" />
                 hello@samipkc.com.np
               </a>
-              <a href="tel:+9779800000000" className="flex items-center gap-3 text-primary-foreground/80 hover:text-primary-foreground transition-colors">
+              <a href="tel:+9779810071283" className="flex items-center gap-3 text-primary-foreground/80 hover:text-primary-foreground transition-colors">
                 <Phone className="w-5 h-5" />
-                +977 980-000-0000
+                +977 981-007-1283
               </a>
               <div className="flex items-center gap-3 text-primary-foreground/60">
                 <MapPin className="w-5 h-5" />
@@ -280,14 +280,14 @@ export function ContactFormPremium() {
             {/* Quick action buttons */}
             <div className="flex flex-wrap gap-3">
               <a
-                href="tel:+9779800000000"
+                href="tel:+9779810071283"
                 className="inline-flex items-center gap-2 px-5 py-3 bg-primary-foreground/10 border border-primary-foreground/20 rounded-full text-primary-foreground hover:bg-primary-foreground/20 transition-colors"
               >
                 <Phone className="w-4 h-4" />
                 Call Now
               </a>
               <a
-                href="https://wa.me/9779800000000"
+                href="https://wa.me/9779810071283?text=Hi%20Pure%20Craft%2C%20I%27d%20like%20to%20book%20a%20demo"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center gap-2 px-5 py-3 bg-green-600 rounded-full text-primary-foreground hover:bg-green-700 transition-colors"
@@ -318,7 +318,7 @@ export function ContactFormPremium() {
                   
                   <div className="flex flex-col sm:flex-row gap-3 justify-center">
                     <a
-                      href="tel:+9779800000000"
+                      href="tel:+9779810071283"
                       className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-charcoal text-primary-foreground rounded-full"
                     >
                       <Phone className="w-4 h-4" />
@@ -333,7 +333,11 @@ export function ContactFormPremium() {
                   </div>
                 </motion.div>
               ) : (
-                <form onSubmit={handleSubmit} className="space-y-5">
+                <form name="contact" method="POST" data-netlify="true" netlify-honeypot="bot-field" onSubmit={handleSubmit} className="space-y-5">
+                  <input type="hidden" name="form-name" value="contact" />
+                  <p style={{ display: 'none' }}>
+                    <label>Don't fill this out if you're human: <input name="bot-field" /></label>
+                  </p>
                   {/* Name */}
                   <div>
                     <label className="flex items-center gap-2 text-small font-medium text-text-primary mb-2">

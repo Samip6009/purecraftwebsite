@@ -37,7 +37,7 @@ export function MobileStickyCTA() {
           <div className="flex gap-3">
             {/* Call */}
             <a
-              href="tel:+9779800000000"
+              href="tel:+9779810071283"
               className="flex-1 inline-flex items-center justify-center gap-2 py-3 bg-charcoal text-primary-foreground font-medium rounded-xl"
               aria-label="Call us"
             >
@@ -47,7 +47,7 @@ export function MobileStickyCTA() {
             
             {/* WhatsApp */}
             <a
-              href="https://wa.me/9779800000000"
+              href="https://wa.me/9779810071283?text=Hi%20Pure%20Craft%2C%20I%27d%20like%20to%20book%20a%20demo"
               target="_blank"
               rel="noopener noreferrer"
               className="flex-1 inline-flex items-center justify-center gap-2 py-3 bg-green-600 text-primary-foreground font-medium rounded-xl"

@@ -8,7 +8,7 @@ import { Menu, X, ArrowUpRight, Instagram } from 'lucide-react';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { Container } from './SiteShell';
 import { trackCTAClick, trackSocialClick } from '@/lib/analytics';
-import pureCraftLogo from '@/assets/pure-craft-logo.png';
+import pureCraftLogoSvg from '@/assets/pure-craft-logo.svg';
 
 // Facebook icon (not in lucide-react)
 const FacebookIcon = ({ className }: { className?: string }) => (
@@ -58,7 +58,7 @@ export function Header() {
       <div className="absolute inset-0 glass" />
       
       <Container size="wide" className="relative">
-        <div className="flex items-center justify-between h-18 md:h-22">
+        <div className="flex items-center justify-between h-16 md:h-20">
           {/* Logo */}
           <motion.a
             href="/"
@@ -67,15 +67,17 @@ export function Header() {
             whileTap={prefersReducedMotion ? {} : { scale: 0.98 }}
             aria-label="Pure Craft - Home"
           >
-            <img 
-              src={pureCraftLogo} 
-              alt="Pure Craft Logo" 
-              className="h-10 md:h-12 w-auto"
+            <img
+              src={pureCraftLogoSvg}
+              alt="Pure Craft logo"
+              className="h-10 w-auto"
               width={48}
               height={48}
               loading="eager"
+              decoding="async"
+              fetchPriority="high"
             />
-            <span className="hidden sm:block font-serif text-lg md:text-xl font-medium text-text-primary">
+            <span className="font-serif text-base sm:text-lg md:text-xl font-medium text-text-primary">
               Pure Craft
             </span>
           </motion.a>
@@ -86,7 +88,7 @@ export function Header() {
               <a
                 key={link.name}
                 href={link.href}
-                className="link-editorial text-small font-medium text-text-secondary hover:text-text-primary transition-colors duration-medium"
+                className="link-editorial text-small font-medium text-text-secondary hover:text-text-primary transition-colors duration-medium focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary/60"
               >
                 {link.name}
               </a>
@@ -116,7 +118,7 @@ export function Header() {
             <motion.a
               href="#contact"
               onClick={handleCTAClick}
-              className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground text-small font-medium rounded-full transition-all duration-medium hover:shadow-depth-3"
+              className="inline-flex items-center gap-2 px-5 py-2.5 bg-primary text-primary-foreground text-small font-medium rounded-full transition-all duration-medium hover:shadow-depth-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary/70"
               whileHover={prefersReducedMotion ? {} : { scale: 1.02 }}
               whileTap={prefersReducedMotion ? {} : { scale: 0.98 }}
             >
@@ -125,15 +127,28 @@ export function Header() {
             </motion.a>
           </div>
 
-          {/* Mobile Menu Button */}
-          <button
-            onClick={toggleMenu}
-            className="relative z-10 lg:hidden p-2 -mr-2 text-text-primary"
-            aria-expanded={isOpen}
-            aria-label={isOpen ? 'Close menu' : 'Open menu'}
-          >
-            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </button>
+          {/* Mobile CTA + Menu Button */}
+          <div className="flex items-center gap-2 lg:hidden">
+            <motion.a
+              href="#contact"
+              onClick={handleCTAClick}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-primary text-primary-foreground text-small font-medium rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary/70"
+              whileHover={prefersReducedMotion ? {} : { scale: 1.02 }}
+              whileTap={prefersReducedMotion ? {} : { scale: 0.98 }}
+            >
+              Get Started
+              <ArrowUpRight className="w-4 h-4" />
+            </motion.a>
+
+            <button
+              onClick={toggleMenu}
+              className="relative z-10 p-2 -mr-2 text-primary-foreground bg-charcoal rounded-full focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary/70"
+              aria-expanded={isOpen}
+              aria-label={isOpen ? 'Close menu' : 'Open menu'}
+            >
+              {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
+          </div>
         </div>
       </Container>
 
@@ -154,7 +169,7 @@ export function Header() {
                     key={link.name}
                     href={link.href}
                     onClick={() => setIsOpen(false)}
-                    className="text-lg font-medium text-text-secondary hover:text-text-primary transition-colors py-2"
+                    className="text-lg font-medium text-text-secondary hover:text-text-primary transition-colors py-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary/60 rounded-md"
                     initial={prefersReducedMotion ? {} : { opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: prefersReducedMotion ? 0 : index * 0.1 }}
@@ -187,7 +202,7 @@ export function Header() {
                     setIsOpen(false);
                     handleCTAClick();
                   }}
-                  className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-primary text-primary-foreground font-medium rounded-full mt-2"
+                  className="inline-flex items-center justify-center gap-2 px-5 py-3 bg-primary text-primary-foreground font-medium rounded-full mt-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-primary/70"
                   initial={prefersReducedMotion ? {} : { opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: prefersReducedMotion ? 0 : 0.4 }}

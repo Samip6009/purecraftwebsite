@@ -7,7 +7,7 @@ import { Instagram, ArrowUpRight, Mail } from 'lucide-react';
 import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { Container } from './SiteShell';
 import { trackSocialClick } from '@/lib/analytics';
-import pureCraftLogo from '@/assets/pure-craft-logo.png';
+import pureCraftLogo from '@/assets/pure-craft-logo.svg';
 
 // Facebook icon
 const FacebookIcon = ({ className }: { className?: string }) => (
@@ -38,14 +38,14 @@ const footerLinks = {
 };
 
 const socialLinks = [
-  { 
-    name: 'Instagram', 
-    href: 'https://instagram.com/purecraft.np', 
+  {
+    name: 'Instagram',
+    href: 'https://www.instagram.com/purecraft.media?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==',
     icon: Instagram,
   },
-  { 
-    name: 'Facebook', 
-    href: 'https://facebook.com/purecraft.np', 
+  {
+    name: 'Facebook',
+    href: 'https://www.facebook.com/profile.php?id=61576632570565',
     icon: FacebookIcon,
   },
 ];

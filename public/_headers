@@ -15,11 +15,9 @@
 # JS/CSS chunks - long cache
 /*.js
   Cache-Control: public, max-age=31536000, immutable
-  Content-Encoding: gzip
 
 /*.css
   Cache-Control: public, max-age=31536000, immutable
-  Content-Encoding: gzip
 
 # Images - long cache
 /assets/photos/*
@@ -47,4 +45,7 @@
 
 # Manifest
 /manifest.json
+  Cache-Control: public, max-age=86400
+
+/sitemap.xml
   Cache-Control: public, max-age=86400

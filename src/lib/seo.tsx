@@ -12,12 +12,12 @@ export const siteConfig = {
   tagline: 'Performance Marketing for Nepal Businesses',
   description: 'Pure Craft is Nepal\'s leading digital marketing agency. Performance-driven marketing, AI appointment setting, and lead generation for growing businesses in Nepal.',
   url: 'https://samipkc.com.np',
-  logo: '/pure-craft-logo.png',
+  logo: '/pure-craft-logo.svg',
   email: 'hello@samipkc.com.np',
-  phone: '+977-9800000000',
+  phone: '+9779810071283',
   socials: {
-    instagram: 'https://instagram.com/purecraft.np',
-    facebook: 'https://facebook.com/purecraft.np',
+    instagram: 'https://www.instagram.com/purecraft.media?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==',
+    facebook: 'https://www.facebook.com/profile.php?id=61576632570565',
   },
   address: {
     locality: 'Kathmandu',
@@ -208,7 +208,8 @@ export function SEOHead({
   const fullTitle = title 
     ? `${title} | ${siteConfig.name}` 
     : siteConfig.fullName;
-  const url = `${siteConfig.url}${path}`;
+  const normalizedPath = path?.startsWith('/') ? path : `/${path}`;
+  const url = `${siteConfig.url}${normalizedPath === '//' ? '/' : normalizedPath}`;
   const imageUrl = image.startsWith('http') ? image : `${siteConfig.url}${image}`;
 
   return (
