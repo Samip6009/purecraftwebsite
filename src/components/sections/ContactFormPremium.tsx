@@ -9,8 +9,8 @@ import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { Container, Section } from '@/components/layout/SiteShell';
 import { trackFormStart, trackFormSubmit, trackEvent } from '@/lib/analytics';
 
-// Google Apps Script webhook proxied via serverless API to avoid browser CORS in production
-const GOOGLE_SCRIPT_URL = "/api/submit-lead";
+// Google Apps Script endpoint (direct, using no-cors fetch)
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz1YQSowWkDEYIAHcUJMyI08PnJwjJDFJUOoitfq3T4Gn7YcRCpD4ZxlFnb7oCDBoZL5w/exec";
 
 // Country codes for phone input
 const COUNTRY_CODES = [
@@ -210,27 +210,19 @@ export function ContactFormPremium() {
       const phoneE164 = formatPhoneE164(formData.countryCode, formData.phone);
       
       const googlePayload = {
-        name: formData.name.trim(),
+        fullName: formData.name.trim(),
         email: formData.email.trim(),
         phone: phoneE164,
-        countryCode: formData.countryCode,
-        company: formData.company.trim() || 'Not specified',
         businessType: formData.businessType || 'Not specified',
-        message: formData.message.trim() || 'No message',
-        timestamp: new Date().toISOString(),
       };
       
-      const googleResponse = await fetch(GOOGLE_SCRIPT_URL, {
+      await fetch(GOOGLE_SCRIPT_URL, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(googlePayload),
-        mode: 'no-cors', // Google Apps Script requires no-cors mode
+        mode: 'no-cors', // Apps Script requires no-cors; resolved fetch counts as success
       });
-      
-      googleScriptSuccess = googleResponse.ok;
-      if (!googleScriptSuccess) {
-        console.warn('Google Sheets submission returned non-OK status');
-      }
+      googleScriptSuccess = true; // opaque response; treat resolved promise as success
     } catch (err) {
       console.error('Google Sheets submission failed:', err);
       // Don't block the success message if Google submission fails
