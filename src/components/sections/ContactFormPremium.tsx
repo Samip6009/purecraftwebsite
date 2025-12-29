@@ -9,6 +9,9 @@ import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { Container, Section } from '@/components/layout/SiteShell';
 import { trackFormStart, trackFormSubmit, trackEvent } from '@/lib/analytics';
 
+// Google Apps Script webhook for Google Sheets integration
+const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz1YQSowWkDEYIAHcUJMyI08PnJwjJDFJUOoitfq3T4Gn7YcRCpD4ZxlFnb7oCDBoZL5w/exec";
+
 // Country codes for phone input
 const COUNTRY_CODES = [
   { code: '+977', country: 'Nepal', flag: '🇳🇵' },
@@ -186,24 +189,62 @@ export function ContactFormPremium() {
     trackFormStart('contact');
     setIsLoading(true);
     
-    // Let Netlify handle the form submission natively
     const form = e.currentTarget;
+    let netlifySuccess = false;
+    let googleScriptSuccess = false;
     
     try {
-      // Submit to Netlify
-      await fetch('/', {
+      // Submit to Netlify (primary form handler)
+      const netlifyResponse = await fetch('/', {
         method: 'POST',
         headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
         body: new URLSearchParams(new FormData(form) as any).toString()
       });
-      
-      trackFormSubmit('contact', true);
-      setIsSubmitted(true);
+      netlifySuccess = netlifyResponse.ok || netlifyResponse.status === 404; // 404 is ok in dev
     } catch {
-      trackFormSubmit('contact', false);
-      setErrors({ message: 'Failed to submit. Please try again.' });
+      console.error('Netlify form submission failed');
+    }
+    
+    try {
+      // Send to Google Sheets via Apps Script (non-blocking)
+      const phoneE164 = formatPhoneE164(formData.countryCode, formData.phone);
+      
+      const googlePayload = {
+        name: formData.name.trim(),
+        email: formData.email.trim(),
+        phone: phoneE164,
+        countryCode: formData.countryCode,
+        company: formData.company.trim() || 'Not specified',
+        businessType: formData.businessType || 'Not specified',
+        message: formData.message.trim() || 'No message',
+        timestamp: new Date().toISOString(),
+      };
+      
+      const googleResponse = await fetch(GOOGLE_SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(googlePayload),
+        mode: 'no-cors', // Google Apps Script requires no-cors mode
+      });
+      
+      googleScriptSuccess = googleResponse.ok;
+      if (!googleScriptSuccess) {
+        console.warn('Google Sheets submission returned non-OK status');
+      }
+    } catch (err) {
+      console.error('Google Sheets submission failed:', err);
+      // Don't block the success message if Google submission fails
     } finally {
       setIsLoading(false);
+    }
+    
+    // Show success if either submission worked
+    if (netlifySuccess || googleScriptSuccess) {
+      trackFormSubmit('contact', true);
+      setIsSubmitted(true);
+    } else {
+      trackFormSubmit('contact', false);
+      setErrors({ message: 'Failed to submit. Please try again or contact us directly.' });
     }
   };
 
