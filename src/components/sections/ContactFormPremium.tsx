@@ -9,8 +9,8 @@ import { useReducedMotion } from '@/hooks/useReducedMotion';
 import { Container, Section } from '@/components/layout/SiteShell';
 import { trackFormStart, trackFormSubmit, trackEvent } from '@/lib/analytics';
 
-// Google Apps Script webhook for Google Sheets integration
-const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz1YQSowWkDEYIAHcUJMyI08PnJwjJDFJUOoitfq3T4Gn7YcRCpD4ZxlFnb7oCDBoZL5w/exec";
+// Google Apps Script webhook proxied via serverless API to avoid browser CORS in production
+const GOOGLE_SCRIPT_URL = "/api/submit-lead";
 
 // Country codes for phone input
 const COUNTRY_CODES = [
